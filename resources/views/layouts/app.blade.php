@@ -189,81 +189,7 @@
             -webkit-text-fill-color: transparent !important;
         }
         
-        /* Dashboard Styling */
-        .dashboard-card {
-            background: rgba(50, 10, 10, 0.4);
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 50, 50, 0.15);
-            padding: 1.25rem;
-            transition: all 0.3s ease;
-        }
-        
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.15);
-            border: 1px solid rgba(255, 50, 50, 0.3);
-        }
-        
-        .dashboard-card-title {
-            color: #ff5555;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        /* Specific styling for user stats cards */
-        .admin-profile-section .stat-number,
-        .dashboard-stat-number,
-        .stat-number,
-        body[class*="dashboard"] .stat-number {
-            font-size: 2.5rem !important;
-            font-weight: 700 !important;
-            background: linear-gradient(135deg, #ff3333, #990000) !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            margin-bottom: 0.5rem !important;
-            text-align: center !important;
-        }
-        
-        /* Override specific element styling */
-        #dashboard .container .row .col,
-        .dashboard .container .row .col,
-        body[class*="dashboard"] .container .row .col {
-            margin-bottom: 1rem;
-        }
-        
-        .dashboard-stat-card,
-        .stat-card,
-        .admin-stat-card {
-            background: rgba(40, 10, 10, 0.4) !important;
-            border-radius: 10px !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
-            border: 1px solid rgba(255, 0, 0, 0.15) !important;
-            padding: 1.5rem !important;
-            text-align: center !important;
-            transition: all 0.3s ease !important;
-        }
-        
-        .dashboard-stat-card:hover,
-        .stat-card:hover,
-        .admin-stat-card:hover {
-            transform: translateY(-5px) !important;
-            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.25) !important;
-            border: 1px solid rgba(255, 50, 50, 0.3) !important;
-        }
-        
-        .stat-label,
-        .dashboard-stat-label,
-        .admin-stat-label {
-            color: #ccc !important;
-            font-size: 0.9rem !important;
-            font-weight: 500 !important;
-            text-align: center !important;
-        }
-        
+        /* Admin Navigation and Logo */
         .logo span {
             color: #ff3333 !important;
         }
@@ -271,6 +197,73 @@
         .logo span strong {
             color: #ffffff !important;
             text-shadow: 0 0 10px rgba(255, 0, 0, 0.4) !important;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, #ff3333, #990000) !important;
+            box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3) !important;
+        }
+        
+        .logo:hover .logo-icon {
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.5) !important;
+        }
+        
+        .nav-link.active {
+            color: #ff5555 !important;
+            background-color: rgba(255, 0, 0, 0.1) !important;
+        }
+        @endif
+        
+        /* Basic styling for all users */
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .navbar {
+            background-color: var(--secondary-dark);
+            padding: 0.7rem 2rem;
+            box-shadow: 0 2px 12px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-bottom 0.3s ease;
+        }
+        
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo span {
+            color: var(--accent-color);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+            font-size: 1.6rem;
+        }
+        
+        .logo span strong {
+            color: white;
+            font-weight: 800;
         }
         
         .logo:hover span {
@@ -337,8 +330,8 @@
         }
         
         .nav-link.active {
-            color: #ff5555 !important;
-            background-color: rgba(255, 0, 0, 0.1) !important;
+            color: var(--accent-color);
+            background-color: rgba(26, 159, 255, 0.1);
         }
         
         .user-actions {
@@ -423,119 +416,6 @@
         .footer-link:hover {
             color: var(--text-light);
             background-color: rgba(255, 255, 255, 0.05);
-        }
-        
-        .search-container {
-            width: 100%;
-            order: -1;
-            margin-right: 0;
-            margin-bottom: 0.5rem;
-        }
-        
-        .dropdown-content {
-            width: 100%;
-            position: static;
-            margin-top: 0.5rem;
-            box-shadow: none;
-        }
-        
-        .footer-content {
-            flex-direction: column;
-            gap: 1rem;
-            text-align: center;
-        }
-        
-        .footer-links {
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .dropdown-btn {
-            width: 100%;
-            justify-content: center;
-        }
-        
-        .username-display {
-            max-width: none;
-        }
-        
-        @media (max-width: 768px) {
-            .navbar-content {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-                padding: 0.5rem 0;
-            }
-            
-            .nav-links {
-                flex-direction: column;
-                align-items: stretch;
-                width: 100%;
-                margin: 1rem 0;
-                background-color: rgba(0, 0, 0, 0.2);
-                border-radius: 8px;
-                padding: 0.5rem;
-            }
-            
-            .nav-link {
-                padding: 0.8rem 1rem;
-                width: 100%;
-                border-radius: 6px;
-                justify-content: flex-start;
-            }
-            
-            .user-actions {
-                width: 100%;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 1rem;
-            }
-            
-            .dropdown-content {
-                width: 100%;
-                position: static;
-                margin-top: 0.5rem;
-                box-shadow: none;
-            }
-            
-            .footer-content {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-            
-            .footer-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .dropdown-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .username-display {
-                max-width: none;
-            }
-        }
-        
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .navbar-content {
-                padding: 0 1rem;
-            }
-            
-            .nav-links {
-                margin: 0 1rem;
-                gap: 1rem;
-            }
-            
-            .navbar-right {
-                gap: 1rem;
-            }
-            
-            .username-display {
-                display: none;
-            }
         }
         
         .user-dropdown {
@@ -667,265 +547,6 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        
-        /* Admin Profile Styling */
-        .admin-profile-section {
-            background: linear-gradient(135deg, rgba(80, 10, 10, 0.8), rgba(40, 5, 5, 0.9));
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 0, 0, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .admin-profile-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
-            z-index: 0;
-        }
-        
-        .admin-profile-photo {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 4px solid #990000;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
-            margin-bottom: 1.5rem;
-            background-color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-        }
-        
-        .admin-profile-photo i {
-            font-size: 3rem;
-            color: #666;
-        }
-        
-        .admin-profile-name {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 0.5rem;
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
-            animation: admin-text-glow 3s infinite;
-        }
-        
-        @keyframes admin-text-glow {
-            0% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
-            50% { text-shadow: 0 0 20px rgba(255, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.4); }
-            100% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
-        }
-        
-        .admin-profile-email {
-            color: #ccc;
-            margin-bottom: 1rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .admin-badge {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(153, 0, 0, 0.8);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255, 100, 100, 0.3);
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
-            position: relative;
-            z-index: 1;
-            animation: admin-pulse 2s infinite;
-        }
-        
-        .admin-badge i {
-            margin-right: 0.5rem;
-        }
-        
-        .admin-stat-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .admin-stat-card {
-            background: rgba(30, 30, 30, 0.6);
-            border-radius: 10px;
-            padding: 1.5rem;
-            text-align: center;
-            border: 1px solid rgba(255, 50, 50, 0.15);
-            transition: all 0.3s ease;
-        }
-        
-        .admin-stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.2);
-            border: 1px solid rgba(255, 50, 50, 0.3);
-            background: rgba(50, 10, 10, 0.4);
-        }
-        
-        .admin-stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #1a9fff;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #1a9fff, #0066cc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .admin-stat-label {
-            color: #bbb;
-            font-size: 0.9rem;
-        }
-        
-        .admin-controls {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .admin-control-btn {
-            background: rgba(30, 30, 30, 0.6);
-            border: 1px solid rgba(255, 50, 50, 0.2);
-            color: #1a9fff;
-            padding: 0.6rem 1rem;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .admin-control-btn:hover {
-            background: rgba(50, 10, 10, 0.5);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(255, 0, 0, 0.15);
-            color: #fff;
-        }
-        
-        /* Theme toggle styles */
-        .theme-toggle {
-            margin-right: 10px;
-            cursor: pointer;
-            width: 40px;
-            height: 24px;
-            background-color: var(--accent-dark);
-            border-radius: 12px;
-            position: relative;
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-        }
-        
-        .theme-toggle::after {
-            content: '';
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            background-color: var(--accent-color);
-            transition: all 0.3s ease;
-        }
-        
-        [data-theme="light"] .theme-toggle::after {
-            transform: translateX(16px);
-        }
-        
-        .theme-toggle i {
-            position: absolute;
-            color: var(--text-light);
-            font-size: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        
-        .theme-toggle .fa-sun {
-            right: 4px;
-        }
-        
-        .theme-toggle .fa-moon {
-            left: 4px;
-        }
-        
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: var(--primary-dark);
-            color: var(--text-light);
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        
-        .navbar {
-            background-color: var(--secondary-dark);
-            padding: 0.7rem 2rem;
-            box-shadow: 0 2px 12px var(--shadow-color);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.3s ease, border-bottom 0.3s ease;
-        }
-        
-        .navbar-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .logo {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--text-light);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo span {
-            color: #ff3333;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-            font-size: 1.6rem;
-        }
-        
-        .logo span strong {
-            color: white;
-            font-weight: 800;
-        }
-        
-        .nav-link.active {
-            color: #ff5555 !important;
-            background-color: rgba(255, 0, 0, 0.1) !important;
-        }
-        @endif
     </style>
 
     @yield('styles')

@@ -98,6 +98,14 @@ class CartController extends Controller
             return redirect()->back()->with('error', 'Oyun bulunamadı');
         }
         
+        // Kullanıcının kütüphanesini kontrol et
+        $library = Session::get('library', []);
+        
+        // Eğer oyun daha önce satın alındıysa uyarı ver
+        if (in_array($gameId, $library)) {
+            return redirect()->back()->with('warning', 'Bu oyun zaten kütüphanenizde bulunuyor. Aynı oyunu tekrar satın alamazsınız.');
+        }
+        
         // Get current cart
         $cart = Session::get('cart', []);
         

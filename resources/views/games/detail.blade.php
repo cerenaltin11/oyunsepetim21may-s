@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Facades\Auth;
+@endphp
+
 @extends('layouts.app')
 
 @section('title', $game->title)
@@ -222,6 +226,37 @@
         padding-left: 1rem;
         margin: 2rem 0 1rem;
     }
+    
+    .alert-owned {
+        background-color: rgba(76, 175, 80, 0.15);
+        color: #4caf50;
+        border: 1px solid #4caf50;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .alert-owned i {
+        font-size: 1.2rem;
+    }
+    
+    .btn-library {
+        background-color: #4caf50;
+        color: white;
+    }
+    
+    .btn-library:hover {
+        background-color: #3d9a40;
+    }
+    
+    .already-owned {
+        margin-bottom: 1rem;
+    }
 </style>
 @endsection
 
@@ -310,21 +345,42 @@
             </div>
             
             <div class="game-actions">
-                <form action="{{ route('cart.add') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="game_id" value="{{ $game->id }}">
-                    <button type="submit" class="action-btn btn-buy">
-                        <i class="fas fa-shopping-cart"></i> Sepete Ekle
-                    </button>
-                </form>
-                
-                <form action="{{ route('wishlist.add') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="game_id" value="{{ $game->id }}">
-                    <button type="submit" class="action-btn btn-wishlist">
-                        <i class="fas fa-heart"></i> İstek Listesine Ekle
-                    </button>
-                </form>
+                @if(Auth::check())
+                    @if(isset($hasGame) && $hasGame)
+                        <div class="already-owned">
+                            <div class="alert-owned">
+                                <i class="fas fa-check-circle"></i> Bu oyuna zaten sahipsiniz
+                            </div>
+                            <a href="{{ route('library') }}" class="action-btn btn-library">
+                                <i class="fas fa-gamepad"></i> Kütüphanenizde Görüntüle
+                            </a>
+                        </div>
+                    @else
+                        <form action="{{ route('cart.add') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="game_id" value="{{ $game->id }}">
+                            <button type="submit" class="action-btn btn-buy">
+                                <i class="fas fa-shopping-cart"></i> Sepete Ekle
+                            </button>
+                        </form>
+                    @endif
+                    
+                    <form action="{{ route('wishlist.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="game_id" value="{{ $game->id }}">
+                        <button type="submit" class="action-btn btn-wishlist">
+                            <i class="fas fa-heart"></i> İstek Listesine Ekle
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="action-btn btn-buy">
+                        <i class="fas fa-user"></i> Satın Almak İçin Giriş Yap
+                    </a>
+                    
+                    <a href="{{ route('login') }}" class="action-btn btn-wishlist">
+                        <i class="fas fa-heart"></i> İstek Listesi İçin Giriş Yap
+                    </a>
+                @endif
             </div>
             
             <div class="game-details-list">

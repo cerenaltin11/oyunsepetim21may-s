@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Facades\Auth;
+@endphp
+
 @extends('layouts.app')
 
 @section('title', 'İstek Listem')
@@ -211,6 +215,53 @@
         padding: 0.2rem 0.5rem;
         border-radius: 4px;
     }
+    
+    .auth-required {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 3rem;
+        background-color: var(--secondary-dark);
+        border-radius: 8px;
+        margin: 2rem auto;
+        max-width: 600px;
+    }
+    
+    .auth-required-icon {
+        font-size: 4rem;
+        color: var(--accent-color);
+        margin-bottom: 1.5rem;
+    }
+    
+    .auth-required-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+    
+    .auth-required-text {
+        margin-bottom: 1.5rem;
+        color: var(--text-gray);
+    }
+    
+    .auth-btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: var(--accent-color);
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s;
+        margin: 0 0.5rem;
+    }
+    
+    .auth-btn:hover {
+        background-color: var(--accent-dark);
+        transform: translateY(-2px);
+    }
 </style>
 @endsection
 
@@ -236,60 +287,74 @@
             </div>
         @endif
         
-        @if(count($wishlistItems) > 0)
-            <div class="wishlist-actions">
-                <a href="{{ route('wishlist.clear') }}" class="clear-wishlist-btn">İstek Listesini Temizle</a>
-            </div>
-            
-            <div class="wishlist-grid">
-                @foreach($wishlistItems as $game)
-                    <div class="wishlist-item">
-                        @if($game->discount_price)
-                            <span class="discount-badge">%{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}</span>
-                        @endif
-                        
-                        <a href="/games/{{ $game->slug }}">
-                            <img src="{{ $game->image }}" alt="{{ $game->title }}" class="wishlist-item-image">
-                        </a>
-                        
-                        <div class="wishlist-item-info">
-                            <h3 class="wishlist-item-title">{{ $game->title }}</h3>
-                            <div class="category-tags">
-                                @foreach(explode(',', $game->category) as $cat)
-                                    <span class="category-tag">{{ trim($cat) }}</span>
-                                @endforeach
-                            </div>
+        @if(Auth::check())
+            @if(count($wishlistItems) > 0)
+                <div class="wishlist-actions">
+                    <a href="{{ route('wishlist.clear') }}" class="clear-wishlist-btn">İstek Listesini Temizle</a>
+                </div>
+                
+                <div class="wishlist-grid">
+                    @foreach($wishlistItems as $game)
+                        <div class="wishlist-item">
+                            @if($game->discount_price)
+                                <span class="discount-badge">%{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}</span>
+                            @endif
                             
-                            <div class="wishlist-item-price">
-                                @if($game->discount_price)
-                                    <span class="original-price">₺{{ $game->price }}</span>
-                                    <span class="price">₺{{ $game->discount_price }}</span>
-                                    <span class="discount">-{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}%</span>
-                                @else
-                                    <span class="price">₺{{ $game->price }}</span>
-                                @endif
-                            </div>
+                            <a href="/games/{{ $game->slug }}">
+                                <img src="{{ $game->image }}" alt="{{ $game->title }}" class="wishlist-item-image">
+                            </a>
                             
-                            <div class="wishlist-item-actions">
-                                <a href="{{ route('wishlist.moveToCart', ['gameId' => $game->id]) }}" class="move-to-cart">
-                                    <i class="fas fa-shopping-cart"></i> Sepete Ekle
-                                </a>
-                                <a href="{{ route('wishlist.remove', ['gameId' => $game->id]) }}" class="remove-wishlist">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                            <div class="wishlist-item-info">
+                                <h3 class="wishlist-item-title">{{ $game->title }}</h3>
+                                <div class="category-tags">
+                                    @foreach(explode(',', $game->category) as $cat)
+                                        <span class="category-tag">{{ trim($cat) }}</span>
+                                    @endforeach
+                                </div>
+                                
+                                <div class="wishlist-item-price">
+                                    @if($game->discount_price)
+                                        <span class="original-price">₺{{ $game->price }}</span>
+                                        <span class="price">₺{{ $game->discount_price }}</span>
+                                        <span class="discount">-{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}%</span>
+                                    @else
+                                        <span class="price">₺{{ $game->price }}</span>
+                                    @endif
+                                </div>
+                                
+                                <div class="wishlist-item-actions">
+                                    <a href="{{ route('wishlist.moveToCart', ['gameId' => $game->id]) }}" class="move-to-cart">
+                                        <i class="fas fa-shopping-cart"></i> Sepete Ekle
+                                    </a>
+                                    <a href="{{ route('wishlist.remove', ['gameId' => $game->id]) }}" class="remove-wishlist">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <div class="empty-wishlist">
-                <div class="empty-wishlist-icon">
-                    <i class="fas fa-heart"></i>
+                    @endforeach
                 </div>
-                <h2>İstek Listeniz Boş</h2>
-                <p class="empty-wishlist-text">İstek listenize henüz bir oyun eklemediniz. Beğendiğiniz oyunları burada saklayabilirsiniz.</p>
-                <a href="/games" class="btn btn-primary">Oyunları Keşfet</a>
+            @else
+                <div class="empty-wishlist">
+                    <div class="empty-wishlist-icon">
+                        <i class="fas fa-heart-broken"></i>
+                    </div>
+                    <h2>İstek listeniz boş</h2>
+                    <p class="empty-wishlist-text">Beğendiğiniz oyunları istek listenize ekleyerek daha sonra satın alabilirsiniz.</p>
+                    <a href="{{ route('home') }}" class="btn btn-primary">Oyunları Keşfet</a>
+                </div>
+            @endif
+        @else
+            <div class="auth-required">
+                <div class="auth-required-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h2 class="auth-required-title">Giriş Yapmanız Gerekiyor</h2>
+                <p class="auth-required-text">İstek listenize erişmek için lütfen giriş yapın veya kayıt olun.</p>
+                <div>
+                    <a href="{{ route('login') }}" class="auth-btn">Giriş Yap</a>
+                    <a href="{{ route('register') }}" class="auth-btn">Kayıt Ol</a>
+                </div>
             </div>
         @endif
     </div>

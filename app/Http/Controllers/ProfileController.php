@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -33,7 +36,7 @@ class ProfileController extends Controller
         $user->email = $request->email;
         $user->save();
         
-        return redirect('/profile')->with('success', 'Profil bilgileriniz başarıyla güncellendi.');
+        return redirect('/dashboard')->with('success', 'Profil bilgileriniz başarıyla güncellendi.');
     }
     
     public function updatePassword(Request $request)
@@ -51,33 +54,76 @@ class ProfileController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
         
-        return redirect('/profile')->with('success', 'Şifreniz başarıyla değiştirildi.');
+        return redirect('/dashboard')->with('success', 'Şifreniz başarıyla güncellendi.');
     }
     
     public function updatePhoto(Request $request)
     {
         $request->validate([
-            'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048']
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'banner' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:4096']
         ]);
         
         $user = Auth::user();
+        $updated = false;
         
-        // Eğer eski bir fotoğraf varsa sil
-        if ($user->photo) {
-            if (file_exists(public_path('images/profiles/' . $user->photo))) {
-                unlink(public_path('images/profiles/' . $user->photo));
+        // Ensure banner column exists
+        try {
+            if (!Schema::hasColumn('users', 'banner')) {
+                DB::statement('ALTER TABLE users ADD COLUMN banner VARCHAR(255) NULL AFTER photo');
             }
+        } catch (\Exception $e) {
+            // If we can't add the column, continue anyway but log the error
+            Log::error("Failed to add banner column: " . $e->getMessage());
         }
         
-        // Yeni fotoğrafı yükle
-        $photoName = time() . '_' . $user->id . '.' . $request->photo->extension();
-        $request->photo->move(public_path('images/profiles'), $photoName);
+        // Profil fotoğrafını işle
+        if ($request->hasFile('photo')) {
+            // Eğer eski bir fotoğraf varsa sil
+            if ($user->photo) {
+                if (file_exists(public_path('images/profiles/' . $user->photo))) {
+                    unlink(public_path('images/profiles/' . $user->photo));
+                }
+            }
+            
+            // Yeni fotoğrafı yükle
+            $photoName = time() . '_' . $user->id . '.' . $request->photo->extension();
+            $request->photo->move(public_path('images/profiles'), $photoName);
+            
+            // Kullanıcı bilgilerini güncelle
+            $user->photo = $photoName;
+            $updated = true;
+        }
         
-        // Kullanıcı bilgilerini güncelle
-        $user->photo = $photoName;
-        $user->save();
+        // Banner fotoğrafını işle
+        if ($request->hasFile('banner')) {
+            // Eğer eski bir banner varsa sil
+            if ($user->banner) {
+                if (file_exists(public_path('images/banners/' . $user->banner))) {
+                    unlink(public_path('images/banners/' . $user->banner));
+                }
+            }
+            
+            // Banner için klasör oluştur
+            if (!file_exists(public_path('images/banners'))) {
+                mkdir(public_path('images/banners'), 0777, true);
+            }
+            
+            // Yeni banner'ı yükle
+            $bannerName = time() . '_banner_' . $user->id . '.' . $request->banner->extension();
+            $request->banner->move(public_path('images/banners'), $bannerName);
+            
+            // Kullanıcı bilgilerini güncelle
+            $user->banner = $bannerName;
+            $updated = true;
+        }
         
-        return redirect('/profile')->with('success', 'Profil fotoğrafınız başarıyla güncellendi.');
+        if ($updated) {
+            $user->save();
+            return redirect('/dashboard')->with('success', 'Profil fotoğraflarınız başarıyla güncellendi.');
+        }
+        
+        return redirect('/dashboard')->with('info', 'Değişiklik yapılmadı. Lütfen bir fotoğraf seçin.');
     }
     
     public function deletePhoto()
@@ -92,6 +138,21 @@ class ProfileController extends Controller
             $user->save();
         }
         
-        return redirect('/profile')->with('success', 'Profil fotoğrafınız kaldırıldı.');
+        return redirect('/dashboard')->with('success', 'Profil fotoğrafınız kaldırıldı.');
+    }
+    
+    public function deleteBanner()
+    {
+        $user = Auth::user();
+        
+        if ($user->banner) {
+            if (file_exists(public_path('images/banners/' . $user->banner))) {
+                unlink(public_path('images/banners/' . $user->banner));
+            }
+            $user->banner = null;
+            $user->save();
+        }
+        
+        return redirect('/dashboard')->with('success', 'Profil banner kaldırıldı.');
     }
 } 

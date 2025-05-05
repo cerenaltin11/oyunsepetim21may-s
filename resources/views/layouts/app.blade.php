@@ -37,8 +37,12 @@
         
         .navbar {
             background-color: var(--secondary-dark);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 0.7rem 2rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .navbar-content {
@@ -109,28 +113,41 @@
         
         .nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 1.8rem;
+            margin-right: auto;
+            margin-left: 2.5rem;
         }
         
         .nav-link {
             color: var(--text-gray);
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.3s;
+            transition: all 0.3s;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link i {
+            font-size: 0.9rem;
         }
         
         .nav-link:hover {
             color: var(--text-light);
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
         .nav-link.active {
             color: var(--accent-color);
+            background-color: rgba(26, 159, 255, 0.1);
         }
         
         .user-actions {
             display: flex;
-            gap: 1rem;
             align-items: center;
+            gap: 1.5rem;
         }
         
         .user-actions a {
@@ -146,21 +163,30 @@
         
         .btn {
             padding: 0.5rem 1rem;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .btn-primary {
             background-color: var(--accent-color);
-            color: white;
+            color: white !important;
             border: none;
         }
         
         .btn-primary:hover {
             background-color: #0d8bf0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 159, 255, 0.3);
+        }
+        
+        .login-btn {
+            padding: 0.6rem 1.2rem;
         }
         
         .container {
@@ -173,6 +199,7 @@
             background-color: var(--secondary-dark);
             padding: 2rem;
             margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .footer-content {
@@ -192,161 +219,125 @@
             color: var(--text-gray);
             text-decoration: none;
             transition: color 0.3s;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
         }
         
         .footer-link:hover {
             color: var(--text-light);
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
         .search-container {
-            margin: 0;
-            padding: 0;
-            display: block;
+            width: 100%;
+            order: -1;
+            margin-right: 0;
+            margin-bottom: 0.5rem;
         }
         
-        .search-bar {
-            display: flex;
-            background-color: var(--accent-dark);
-            border-radius: 8px;
-            overflow: hidden;
-            width: 300px;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-            position: relative;
+        .dropdown-content {
+            width: 100%;
+            position: static;
+            margin-top: 0.5rem;
+            box-shadow: none;
         }
         
-        .search-bar:focus-within {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px rgba(26, 159, 255, 0.2);
-            background-color: rgba(42, 42, 42, 0.8);
+        .footer-content {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
         }
         
-        .search-input {
-            background-color: transparent;
-            border: none;
-            color: var(--text-light);
-            padding: 0.8rem 1rem;
-            flex-grow: 1;
-            outline: none;
-            font-size: 0.95rem;
-        }
-        
-        .search-input::placeholder {
-            color: var(--text-gray);
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-        }
-        
-        .search-input:focus::placeholder {
-            opacity: 0.5;
-        }
-        
-        .search-btn {
-            background-color: var(--accent-color);
-            border: none;
-            color: white;
-            padding: 0.8rem 1.2rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
+        .footer-links {
+            flex-wrap: wrap;
             justify-content: center;
         }
         
-        .search-btn:hover {
-            background-color: #0d8bf0;
-        }
-        
-        .search-btn i {
-            font-size: 1rem;
-        }
-        
-        .search-suggestions {
-            position: absolute;
-            top: 100%;
-            left: 0;
+        .dropdown-btn {
             width: 100%;
-            background-color: var(--secondary-dark);
-            border-radius: 0 0 8px 8px;
-            border: 1px solid var(--accent-color);
-            border-top: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            z-index: 999;
-            max-height: 300px;
-            overflow-y: auto;
-            display: none;
+            justify-content: center;
         }
         
-        .search-bar:focus-within .search-suggestions {
-            max-height: 300px;
-        }
-        
-        .suggestion-item {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            border-bottom: 1px solid var(--accent-dark);
-        }
-        
-        .suggestion-item:last-child {
-            border-bottom: none;
-        }
-        
-        .suggestion-item:hover {
-            background-color: var(--accent-dark);
-        }
-        
-        .suggestion-thumb {
-            width: 40px;
-            height: 40px;
-            border-radius: 4px;
-            margin-right: 10px;
-            object-fit: cover;
-        }
-        
-        .suggestion-info {
-            flex-grow: 1;
-        }
-        
-        .suggestion-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-        
-        .suggestion-category {
-            font-size: 0.8rem;
-            color: var(--text-gray);
-        }
-        
-        .suggestion-price {
-            font-weight: 700;
-            color: var(--accent-color);
-            font-size: 0.9rem;
-        }
-        
-        .search-no-results {
-            padding: 1rem;
-            text-align: center;
-            color: var(--text-gray);
-            font-style: italic;
+        .username-display {
+            max-width: none;
         }
         
         @media (max-width: 768px) {
-            .navbar-content, .footer-content {
+            .navbar-content {
                 flex-direction: column;
                 gap: 1rem;
+                align-items: stretch;
+                padding: 0.5rem 0;
             }
             
             .nav-links {
                 flex-direction: column;
-                align-items: center;
+                align-items: stretch;
+                width: 100%;
+                margin: 1rem 0;
+                background-color: rgba(0, 0, 0, 0.2);
+                border-radius: 8px;
+                padding: 0.5rem;
             }
             
-            .search-bar {
+            .nav-link {
+                padding: 0.8rem 1rem;
                 width: 100%;
+                border-radius: 6px;
+                justify-content: flex-start;
+            }
+            
+            .user-actions {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+            
+            .dropdown-content {
+                width: 100%;
+                position: static;
+                margin-top: 0.5rem;
+                box-shadow: none;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .dropdown-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .username-display {
+                max-width: none;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .navbar-content {
+                padding: 0 1rem;
+            }
+            
+            .nav-links {
+                margin: 0 1rem;
+                gap: 1rem;
+            }
+            
+            .navbar-right {
+                gap: 1rem;
+            }
+            
+            .username-display {
+                display: none;
             }
         }
         
@@ -358,10 +349,21 @@
         .dropdown-btn {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.8rem;
             cursor: pointer;
             color: var(--text-light);
             font-weight: 600;
+            padding: 0.5rem 0.9rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dropdown-btn:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .dropdown-content {
@@ -369,28 +371,50 @@
             position: absolute;
             right: 0;
             background-color: var(--secondary-dark);
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 10;
-            border-radius: 4px;
-            margin-top: 0.5rem;
+            min-width: 220px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3);
+            z-index: 100;
+            border-radius: 8px;
+            margin-top: 0.7rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
         }
         
         .dropdown-content a {
             color: var(--text-gray);
-            padding: 12px 16px;
+            padding: 14px 18px;
             text-decoration: none;
-            display: block;
-            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .dropdown-content a:last-child {
+            border-bottom: none;
         }
         
         .dropdown-content a:hover {
-            background-color: var(--accent-dark);
+            background-color: rgba(255, 255, 255, 0.05);
             color: var(--text-light);
         }
         
         .dropdown-content.show {
             display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .username-display {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .user-avatar {
@@ -403,27 +427,48 @@
             justify-content: center;
             color: white;
             font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
         
         .cart-icon {
             position: relative;
-            padding-right: 0.2rem;
+            padding: 0.5rem;
+            font-size: 1.2rem;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.08);
+            transition: all 0.3s;
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .cart-icon:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            color: var(--accent-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .cart-count {
             position: absolute;
-            top: -8px;
-            right: -8px;
+            top: -6px;
+            right: -6px;
             background-color: var(--accent-color);
             color: white;
-            font-size: 0.7rem;
-            width: 18px;
-            height: 18px;
+            font-size: 0.75rem;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
     </style>
 
@@ -439,19 +484,12 @@
                 <span>Oyun<strong>Sepetim</strong></span>
             </a>
             
-            <form action="/games" method="GET" class="search-container" id="search-form">
-                <div class="search-bar">
-                    <input type="text" class="search-input" name="search" placeholder="Oyun ara..." autocomplete="off" id="game-search">
-                    <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
-                </div>
-            </form>
-            
             <nav class="nav-links">
                 <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Ana Sayfa</a>
                 <a href="/games" class="nav-link {{ request()->is('games*') ? 'active' : '' }}">Oyunlar</a>
                 <a href="/deals" class="nav-link {{ request()->is('deals*') ? 'active' : '' }}">Fırsatlar</a>
-                <a href="/wishlist" class="nav-link {{ request()->is('wishlist*') ? 'active' : '' }}">İstek Listesi</a>
-                <a href="/library" class="nav-link {{ request()->is('library*') ? 'active' : '' }}">Kütüphanem</a>
+                <a href="/wishlist" class="nav-link {{ request()->is('wishlist*') ? 'active' : '' }}"><i class="fas fa-heart"></i> İstek Listesi</a>
+                <a href="/library" class="nav-link {{ request()->is('library*') ? 'active' : '' }}"><i class="fas fa-gamepad"></i> Kütüphanem</a>
             </nav>
             
             <div class="user-actions">
@@ -459,12 +497,11 @@
                     $cartCount = session('cart') ? count(session('cart')) : 0;
                 @endphp
                 
-                <a href="/cart" class="cart-icon">
+                <a href="/cart" class="cart-icon" title="Sepet">
                     <i class="fas fa-shopping-cart"></i>
                     @if($cartCount > 0)
                         <span class="cart-count">{{ $cartCount }}</span>
                     @endif
-                    Sepet
                 </a>
                 
                 @auth
@@ -477,14 +514,14 @@
                                     {{ substr(Auth::user()->name, 0, 1) }}
                                 @endif
                             </div>
-                            <span>{{ Auth::user()->name }}</span>
+                            <span class="username-display">{{ Auth::user()->name }}</span>
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="dropdown-content">
                             @if(Auth::user()->is_admin)
-                                <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Panel</a>
+                                <a href="/admin/panel"><i class="fas fa-cogs mr-2"></i> Panel</a>
                             @endif
-                            <a href="/profile"><i class="fas fa-user"></i> Profil</a>
+                            <a href="/dashboard"><i class="fas fa-user"></i> Kullanıcı Paneli</a>
                             <a href="/orders"><i class="fas fa-history"></i> Satın Alma Geçmişi</a>
                             <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt"></i> Çıkış Yap
@@ -495,7 +532,7 @@
                         </div>
                     </div>
                 @else
-                    <a href="/login" class="btn btn-primary">Giriş Yap</a>
+                    <a href="/login" class="btn btn-primary login-btn"><i class="fas fa-sign-in-alt"></i> Giriş Yap</a>
                 @endauth
             </div>
         </div>
@@ -523,44 +560,39 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Arama formu boşken gönderilmesini engelle
-            const searchForm = document.getElementById('search-form');
-            const searchInput = document.getElementById('game-search');
-            
-            searchForm.addEventListener('submit', function(event) {
-                if (searchInput.value.trim() === '') {
-                    event.preventDefault();
-                }
-            });
-
-            // Dropdown menü için tıklama işlevi
-            const dropdownBtn = document.querySelector('.dropdown-btn');
-            const dropdownContent = document.querySelector('.dropdown-content');
-            
-            if (dropdownBtn && dropdownContent) {
-                // Dropdown butonuna tıklandığında menüyü aç/kapat
+            // Kullanıcı dropdown menüsü işlevselliği
+            function setupDropdownMenu() {
+                const dropdownBtn = document.querySelector('.dropdown-btn');
+                const dropdownContent = document.querySelector('.dropdown-content');
+                
+                if (!dropdownBtn || !dropdownContent) return;
+                
+                // Dropdown açma/kapama işlevi
                 dropdownBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
                     e.stopPropagation();
                     dropdownContent.classList.toggle('show');
                 });
                 
-                // Sayfa herhangi bir yerine tıklandığında menüyü kapat
+                // Sayfa dışına tıklandığında menüyü kapat
                 document.addEventListener('click', function(e) {
-                    if (!dropdownBtn.contains(e.target) && !dropdownContent.contains(e.target)) {
+                    if (dropdownContent.classList.contains('show') && 
+                        !dropdownBtn.contains(e.target) && 
+                        !dropdownContent.contains(e.target)) {
                         dropdownContent.classList.remove('show');
                     }
                 });
                 
-                // Dropdown içindeki bağlantılara tıklandığında menü kapanmasın
-                dropdownContent.addEventListener('click', function(e) {
-                    if (e.target.tagName === 'A') {
-                        // Menüyü kapat eğer tıklanan eleman "Çıkış Yap" değilse
-                        if (!e.target.classList.contains('logout-link')) {
-                            dropdownContent.classList.remove('show');
-                        }
+                // ESC tuşu ile menüyü kapat
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && dropdownContent.classList.contains('show')) {
+                        dropdownContent.classList.remove('show');
                     }
                 });
             }
+            
+            // Dropdown menü işlevini başlat
+            setupDropdownMenu();
         });
     </script>
 </body>

@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Facades\Auth;
+@endphp
+
 @extends('layouts.app')
 
 @section('title', 'Kütüphanem')
@@ -5,133 +9,104 @@
 @section('styles')
 <style>
     .library-container {
-        padding: 2rem 0;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
     }
     
     .library-title {
         font-size: 1.8rem;
         margin-bottom: 1.5rem;
-        border-bottom: 2px solid var(--accent-dark);
-        padding-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--accent-dark);
     }
     
-    .library-grid {
+    .games-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 20px;
     }
     
-    .library-item {
-        background-color: var(--secondary-dark);
-        border-radius: 8px;
+    /* Game card styling */
+    .game-item {
+        background-color: #1a1a1a;
+        border-radius: 6px;
         overflow: hidden;
         position: relative;
-        transition: transform 0.3s;
-    }
-    
-    .library-item:hover {
-        transform: translateY(-5px);
-    }
-    
-    .library-item-image {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: transform 0.2s;
         width: 100%;
-        height: 150px;
+    }
+    
+    .game-item:hover {
+        transform: translateY(-3px);
+    }
+    
+    .game-cover {
+        position: relative;
+        width: 100%;
+        padding-top: 100%; /* Square aspect ratio */
+    }
+    
+    .game-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         object-fit: cover;
     }
     
-    .library-item-info {
-        padding: 1rem;
-    }
-    
-    .library-item-title {
-        font-weight: 600;
-        font-size: 1.1rem;
-        margin-bottom: 0.3rem;
-    }
-    
-    .library-item-category {
-        display: inline-block;
-        font-size: 0.8rem;
-        color: var(--text-gray);
-        margin-bottom: 0.5rem;
-    }
-    
-    .library-item-size {
+    .game-title {
         font-size: 0.9rem;
-        color: var(--text-gray);
-        margin-bottom: 1rem;
+        font-weight: 500;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
-    .library-item-actions {
+    .game-buttons {
         display: flex;
-        justify-content: space-between;
-        gap: 0.5rem;
+        overflow: hidden;
     }
     
-    .download-btn {
-        background-color: var(--accent-color);
-        color: white;
-        border: none;
-        border-radius: 4px;
-        padding: 0.5rem;
-        font-size: 0.9rem;
-        cursor: pointer;
+    .game-btn {
         flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.3rem;
+        text-align: center;
+        padding: 8px 0;
+        font-size: 0.8rem;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s;
         text-decoration: none;
-    }
-    
-    .download-btn:hover {
-        background-color: var(--accent-dark);
     }
     
     .play-btn {
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        padding: 0.5rem;
-        font-size: 0.9rem;
-        cursor: pointer;
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.3rem;
-        text-decoration: none;
+        background-color: #4CAF50;
+    }
+    
+    .download-btn {
+        background-color: #2196F3;
     }
     
     .play-btn:hover {
-        background-color: #3d9a40;
+        background-color: #45a049;
     }
     
-    .empty-library {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 3rem;
+    .download-btn:hover {
+        background-color: #0b7dda;
     }
     
-    .empty-library-icon {
-        font-size: 4rem;
-        color: var(--text-gray);
-        margin-bottom: 1rem;
-    }
-    
-    .empty-library-text {
-        margin-bottom: 1.5rem;
-        color: var(--text-gray);
-    }
-    
+    /* Alert messages */
     .alert {
-        padding: 1rem;
+        padding: 0.75rem;
         border-radius: 4px;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
     }
     
     .alert-success {
@@ -152,93 +127,83 @@
         border: 1px solid #2196f3;
     }
     
-    .category-tag {
-        background-color: var(--accent-dark);
-        color: var(--text-gray);
-        font-size: 0.7rem;
-        padding: 0.2rem 0.5rem;
+    /* Empty library */
+    .empty-library {
+        text-align: center;
+        padding: 2rem;
+        background-color: #1a1a1a;
         border-radius: 4px;
-        margin-right: 0.5rem;
+        margin: 1rem 0;
+    }
+    
+    .empty-library-icon {
+        font-size: 2.5rem;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-library h3 {
+        font-size: 1.2rem;
         margin-bottom: 0.5rem;
+        color: #fff;
+    }
+    
+    .empty-library p {
+        color: #aaa;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .empty-library .browse-btn {
+        background-color: #2196F3;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 3px;
+        text-decoration: none;
         display: inline-block;
-    }
-    
-    .game-stats {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        padding: 0.5rem;
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.8rem;
-    }
-    
-    .game-playtime {
-        color: var(--text-gray);
-    }
-    
-    .game-last-played {
-        color: var(--text-gray);
+        font-size: 0.9rem;
     }
 </style>
 @endsection
 
 @section('content')
-    <div class="library-container">
-        <h1 class="library-title">Kütüphanem</h1>
-        
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-        
-        @if(session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-        
-        @if(session('info'))
-            <div class="alert alert-info">
-                {{ session('info') }}
-            </div>
-        @endif
-        
+<div class="container py-3">
+    <h1 class="library-title">Kütüphanem</h1>
+    
+    @if(session('success'))
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> {{ session('success') }}
+        </div>
+    @endif
+    
+    @if(session('error'))
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+        </div>
+    @endif
+    
+    @if(session('info'))
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> {{ session('info') }}
+        </div>
+    @endif
+    
+    @if(Auth::check())
         @if(count($libraryItems) > 0)
-            <div class="library-grid">
+            <div class="games-grid">
                 @foreach($libraryItems as $game)
-                    <div class="library-item">
-                        <div class="library-item-image-container" style="position: relative;">
-                            <img src="{{ $game->image }}" alt="{{ $game->title }}" class="library-item-image">
-                            <div class="game-stats">
-                                <span class="game-playtime"><i class="fas fa-clock"></i> 0 saat</span>
-                                <span class="game-last-played">Son oynanma: Hiç</span>
-                            </div>
+                    <div class="game-item">
+                        <div class="game-cover">
+                            <img src="{{ $game->image }}" class="game-image" alt="{{ $game->title }}">
                         </div>
-                        
-                        <div class="library-item-info">
-                            <h3 class="library-item-title">{{ $game->title }}</h3>
-                            <div class="category-tags">
-                                @foreach(explode(',', $game->category) as $cat)
-                                    <span class="category-tag">{{ trim($cat) }}</span>
-                                @endforeach
-                            </div>
-                            
-                            <div class="library-item-size">
-                                Boyut: {{ rand(1, 50) }} GB
-                            </div>
-                            
-                            <div class="library-item-actions">
-                                <a href="#" class="play-btn">
-                                    <i class="fas fa-play"></i> Oyna
-                                </a>
-                                <a href="{{ route('library.download', ['gameId' => $game->id]) }}" class="download-btn">
-                                    <i class="fas fa-download"></i> İndir
-                                </a>
-                            </div>
+                        <div class="game-title" title="{{ $game->title }}">{{ $game->title }}</div>
+                        <div class="game-buttons">
+                            <a href="#" class="game-btn play-btn">
+                                <i class="fas fa-play"></i> Oyna
+                            </a>
+                            <a href="{{ route('library.download', ['gameId' => $game->id]) }}" class="game-btn download-btn">
+                                <i class="fas fa-download"></i> İndir
+                            </a>
                         </div>
                     </div>
                 @endforeach
@@ -248,10 +213,24 @@
                 <div class="empty-library-icon">
                     <i class="fas fa-gamepad"></i>
                 </div>
-                <h2>Kütüphaneniz Boş</h2>
-                <p class="empty-library-text">Henüz hiç oyun satın almadınız. Oyun satın alarak kütüphanenize ekleyebilirsiniz.</p>
-                <a href="/games" class="btn btn-primary">Oyunları Keşfet</a>
+                <h3>Kütüphanenizde henüz oyun bulunmuyor</h3>
+                <p>Oyun satın aldıktan sonra burada görünecektir</p>
+                <a href="/games" class="browse-btn">
+                    <i class="fas fa-search"></i> Oyunlara Göz At
+                </a>
             </div>
         @endif
-    </div>
+    @else
+        <div class="empty-library">
+            <div class="empty-library-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h3>Giriş Yapmanız Gerekiyor</h3>
+            <p>Kütüphanenize erişmek için lütfen giriş yapın veya kayıt olun.</p>
+            <a href="{{ route('login') }}" class="browse-btn">
+                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+            </a>
+        </div>
+    @endif
+</div>
 @endsection 

@@ -369,6 +369,55 @@
         margin: 2rem 0;
     }
     
+    .owned-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(76, 175, 80, 0.9);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        z-index: 5;
+    }
+    
+    .owned-badge i {
+        font-size: 0.9rem;
+    }
+    
+    .owned-badge-list {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(76, 175, 80, 0.9);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        z-index: 5;
+    }
+    
+    .discount-badge-list {
+        position: absolute;
+        top: 40px;
+        right: 10px;
+        background-color: #e53935;
+        color: white;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+    
     @media (max-width: 768px) {
         .games-header {
             flex-direction: column;
@@ -452,6 +501,11 @@
                                 <div class="game-actions-wrapper">
                                     <a href="/games/{{ $game->slug }}">
                                         <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
+                                        @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                                            <div class="owned-badge">
+                                                <i class="fas fa-check-circle"></i> Sahip
+                                            </div>
+                                        @endif
                                         <div class="game-info">
                                             @foreach(explode(',', $game->category) as $cat)
                                                 <div class="category-tag">{{ trim($cat) }}</div>
@@ -527,25 +581,32 @@
         <div class="games-grid" id="gridView">
             @if($games->count() > 0)
                 @foreach($games as $game)
-                <div class="game-card">
-                    <span class="discount-badge">%{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}</span>
-                    <a href="/games/{{ $game->slug }}">
-                        <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
-                        <div class="game-info">
-                            @foreach(explode(',', $game->category) as $cat)
-                                <div class="category-tag">{{ trim($cat) }}</div>
-                            @endforeach
-                            <h3 class="game-title">{{ $game->title }}</h3>
-                            <div class="game-price">
-                                <div>
-                                    <span class="original-price">₺{{ $game->price }}</span>
-                                    <span class="price">₺{{ $game->discount_price }}</span>
+                    @php
+                        $discountPercent = round((($game->price - $game->discount_price) / $game->price) * 100);
+                    @endphp
+                    <div class="game-card">
+                        <span class="discount-badge">-{{ $discountPercent }}%</span>
+                        <a href="/games/{{ $game->slug }}">
+                            <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
+                            @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                                <div class="owned-badge">
+                                    <i class="fas fa-check-circle"></i> Sahip
                                 </div>
-                                <span class="discount">-{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}%</span>
+                            @endif
+                            <div class="game-info">
+                                @foreach(explode(',', $game->category) as $cat)
+                                    <div class="category-tag">{{ trim($cat) }}</div>
+                                @endforeach
+                                <h3 class="game-title">{{ $game->title }}</h3>
+                                <div class="game-price">
+                                    <div>
+                                        <span class="price">₺{{ $game->discount_price }}</span>
+                                        <span class="original-price">₺{{ $game->price }}</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
                 @endforeach
             @else
                 <div class="no-results">
@@ -558,31 +619,38 @@
         <div class="games-list" id="listView">
             @if($games->count() > 0)
                 @foreach($games as $game)
-                <div class="game-item-list">
-                    <span class="discount-badge">%{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}</span>
-                    <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-item-image">
-                    <div class="game-item-info">
-                        <div class="game-item-left">
-                            <h3 class="game-item-title">{{ $game->title }}</h3>
-                            <p class="game-item-description">{{ $game->description }}</p>
-                            <div class="game-item-categories">
-                                @foreach(explode(',', $game->category) as $cat)
-                                    <div class="category-tag">{{ trim($cat) }}</div>
-                                @endforeach
+                    @php
+                        $discountPercent = round((($game->price - $game->discount_price) / $game->price) * 100);
+                    @endphp
+                    <div class="game-item-list">
+                        <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-item-image">
+                        <span class="discount-badge-list">-{{ $discountPercent }}%</span>
+                        @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                            <div class="owned-badge-list">
+                                <i class="fas fa-check-circle"></i> Sahip
                             </div>
-                        </div>
-                        <div class="game-item-right">
-                            <div class="game-price">
-                                <div>
-                                    <span class="original-price">₺{{ $game->price }}</span>
-                                    <span class="price">₺{{ $game->discount_price }}</span>
+                        @endif
+                        <div class="game-item-info">
+                            <div class="game-item-left">
+                                <h3 class="game-item-title">{{ $game->title }}</h3>
+                                <p class="game-item-description">{{ $game->description }}</p>
+                                <div class="game-item-categories">
+                                    @foreach(explode(',', $game->category) as $cat)
+                                        <div class="category-tag">{{ trim($cat) }}</div>
+                                    @endforeach
                                 </div>
-                                <span class="discount">-{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}%</span>
                             </div>
-                            <a href="/games/{{ $game->slug }}" class="btn btn-primary mt-2">Detaylar</a>
+                            <div class="game-item-right">
+                                <div class="game-price">
+                                    <div>
+                                        <span class="price">₺{{ $game->discount_price }}</span>
+                                        <span class="original-price">₺{{ $game->price }}</span>
+                                    </div>
+                                </div>
+                                <a href="/games/{{ $game->slug }}" class="btn btn-primary mt-2">Detaylar</a>
+                            </div>
                         </div>
                     </div>
-                </div>
                 @endforeach
             @else
                 <div class="no-results">

@@ -16,18 +16,21 @@ class LibraryController extends Controller
      */
     public function index()
     {
-        // For demonstration, we'll use session to track purchased games
-        // In a real app, this would be from a purchases/orders table in database
+        // Redirect to login if not authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')
+                ->with('error', 'Kütüphanenize erişmek için giriş yapmalısınız.');
+        }
+        
+        // Get games from session library
         $libraryGames = Session::get('library', []);
         $libraryItems = [];
         
+        // Find game details for each ID in library
         if (!empty($libraryGames)) {
             foreach ($libraryGames as $gameId) {
                 $game = Game::find($gameId);
                 if ($game) {
-                    // Add some fake play time data for demo
-                    $game->play_time = rand(0, 100);
-                    $game->last_played = rand(0, 10) > 3 ? now()->subDays(rand(1, 30))->format('d.m.Y') : null;
                     $libraryItems[] = $game;
                 }
             }
@@ -47,9 +50,6 @@ class LibraryController extends Controller
      */
     public function addGames($gameIds)
     {
-        // Debug: Ensure we have game IDs
-        \Log::info('Adding games to library: ', $gameIds);
-        
         $library = Session::get('library', []);
         
         foreach ($gameIds as $gameId) {
@@ -57,9 +57,6 @@ class LibraryController extends Controller
                 $library[] = $gameId;
             }
         }
-        
-        // Debug: Check final library state
-        \Log::info('Library after adding games: ', $library);
         
         Session::put('library', $library);
     }
@@ -75,16 +72,19 @@ class LibraryController extends Controller
         $library = Session::get('library', []);
         
         if (!in_array($gameId, $library)) {
-            return redirect()->back()->with('error', 'Bu oyun kütüphanenizde bulunmuyor.');
+            return redirect()->back()
+                ->with('error', 'Bu oyun kütüphanenizde bulunmuyor.');
         }
         
         $game = Game::find($gameId);
         if (!$game) {
-            return redirect()->back()->with('error', 'Oyun bulunamadı.');
+            return redirect()->back()
+                ->with('error', 'Oyun bulunamadı.');
         }
         
-        // In a real app, this would initiate an actual download
-        // For demo purposes, we'll just show a success message
-        return redirect()->back()->with('success', $game->title . ' oyununun indirme işlemi başlatıldı.');
+        // In a real app, this would initiate a download
+        // For demo, just show a success message
+        return redirect()->back()
+            ->with('success', $game->title . ' oyununun indirme işlemi başlatıldı.');
     }
 } 

@@ -16,6 +16,11 @@ class WishlistController extends Controller
      */
     public function index()
     {
+        // Giriş yapmamış kullanıcıları login sayfasına yönlendir
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'İstek listesine erişmek için giriş yapmalısınız.');
+        }
+        
         $wishlist = Session::get('wishlist', []);
         $wishlistItems = [];
         

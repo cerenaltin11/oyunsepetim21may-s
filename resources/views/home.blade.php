@@ -136,11 +136,23 @@
         padding-left: 1rem;
     }
 
+    .section-title-view-all {
+        float: right;
+        font-size: 1rem;
+        color: var(--accent-color);
+        text-decoration: none;
+        margin-top: 5px;
+    }
+    
+    .section-title-view-all:hover {
+        text-decoration: underline;
+    }
+
     .game-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1.5rem;
-        margin-bottom: 2rem;
+        margin-bottom: 4rem;
     }
 
     .game-card {
@@ -199,12 +211,15 @@
         margin-bottom: 0.5rem;
         display: inline-block;
     }
+    
+    .special-offers-section {
+        margin-bottom: 4rem;
+    }
 
     .special-offers {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
-        margin-bottom: 2rem;
     }
 
     .special-offer {
@@ -241,7 +256,7 @@
 
     .carousel {
         position: relative;
-        margin-bottom: 2rem;
+        margin-bottom: 4rem;
     }
 
     .carousel-track {
@@ -368,6 +383,12 @@
 @endsection
 
 @section('content')
+    @if(isset($error))
+    <div class="alert alert-danger">
+        {{ $error }}
+    </div>
+    @endif
+
     <section class="hero-banner">
         <div class="hero-slideshow">
             <div class="hero-slide tlou2 active" data-title="The Last of Us Part II" data-desc="Ellie ve Joel'in destansı macerasında hayatta kalma savaşı devam ediyor.">
@@ -395,7 +416,10 @@
     </section>
 
     <section>
-        <h2 class="section-title">Öne Çıkan Oyunlar</h2>
+        <h2 class="section-title">
+            Öne Çıkan Oyunlar
+            <a href="{{ url('/games') }}" class="section-title-view-all">Tümünü Gör</a>
+        </h2>
         <div class="carousel">
             <button class="carousel-btn prev"><i class="fas fa-chevron-left"></i></button>
             <div class="carousel-track">
@@ -453,8 +477,11 @@
         </div>
     </section>
 
-    <section>
-        <h2 class="section-title">Özel Teklifler</h2>
+    <section class="special-offers-section">
+        <h2 class="section-title">
+            Özel Teklifler
+            <a href="{{ url('/deals') }}" class="section-title-view-all">Tümünü Gör</a>
+        </h2>
         <div class="special-offers">
             <div class="special-offer">
                 <img src="https://cdn.akamai.steamstatic.com/steam/apps/1091500/capsule_616x353.jpg" alt="Hafta Sonu İndirimleri" class="offer-image">
@@ -476,80 +503,236 @@
     </section>
 
     <section>
-        <h2 class="section-title">Popüler Oyunlar</h2>
+        <h2 class="section-title">
+            Popüler Oyunlar
+            <a href="{{ url('/games?sort=popularity&direction=desc') }}" class="section-title-view-all">Tümünü Gör</a>
+        </h2>
         <div class="game-grid">
-            <div class="game-card">
-                <img src="https://cdn.akamai.steamstatic.com/steam/apps/1938090/header.jpg" alt="Call of Duty: Modern Warfare" class="game-thumb">
-                <div class="game-info">
-                    <div class="category-tag">FPS</div>
-                    <h3 class="game-title">Call of Duty: Modern Warfare</h3>
-                    <div class="game-price">
-                        <span class="price">₺549</span>
-                    </div>
+            @if(isset($popularGames) && count($popularGames) > 0)
+                @foreach($popularGames as $game)
+                <div class="game-card">
+                    <a href="/games/{{ $game->slug }}">
+                        <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
+                        @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                            <div class="owned-badge">
+                                <i class="fas fa-check-circle"></i> Sahip
+                            </div>
+                        @endif
+                        <div class="game-info">
+                            @foreach(explode(',', $game->category) as $cat)
+                                <div class="category-tag">{{ trim($cat) }}</div>
+                            @endforeach
+                            <h3 class="game-title">{{ $game->title }}</h3>
+                            <div class="game-price">
+                                @if($game->discount_price)
+                                    <span class="price">₺{{ $game->discount_price }}</span>
+                                    <span class="discount">-{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}%</span>
+                                @else
+                                    <span class="price">₺{{ $game->price }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
                 </div>
-            </div>
-            <div class="game-card">
-                <img src="https://cdn.akamai.steamstatic.com/steam/apps/1174180/header.jpg" alt="Red Dead Redemption 2" class="game-thumb">
-                <div class="game-info">
-                    <div class="category-tag">Açık Dünya</div>
-                    <h3 class="game-title">Red Dead Redemption 2</h3>
-                    <div class="game-price">
-                        <span class="price">₺349</span>
-                        <span class="discount">-35%</span>
-                    </div>
-                </div>
-            </div>
-            <div class="game-card">
-                <img src="https://cdn.akamai.steamstatic.com/steam/apps/1919590/header.jpg" alt="NBA 2K23" class="game-thumb">
-                <div class="game-info">
-                    <div class="category-tag">Spor</div>
-                    <h3 class="game-title">NBA 2K23</h3>
-                    <div class="game-price">
-                        <span class="price">₺399</span>
-                    </div>
-                </div>
-            </div>
-            <div class="game-card">
-                <img src="https://image.api.playstation.com/vulcan/ap/rnd/202010/2618/Y02LrQoKFBgwT1NuX9sNSy3K.jpg" alt="The Last of Us Part II" class="game-thumb">
-                <div class="game-info">
-                    <div class="category-tag">Macera</div>
-                    <h3 class="game-title">The Last of Us Part II</h3>
-                    <div class="game-price">
-                        <span class="price">₺649</span>
-                        <span class="discount">-15%</span>
-                    </div>
-                </div>
-            </div>
-            <div class="game-card">
-                <img src="https://cdn.akamai.steamstatic.com/steam/apps/1551360/header.jpg" alt="Forza Horizon 5" class="game-thumb">
-                <div class="game-info">
-                    <div class="category-tag">Yarış</div>
-                    <h3 class="game-title">Forza Horizon 5</h3>
-                    <div class="game-price">
-                        <span class="price">₺449</span>
-                    </div>
-                </div>
-            </div>
-            <div class="game-card">
-                <img src="https://cdn.akamai.steamstatic.com/steam/apps/1196590/header.jpg" alt="Resident Evil Village" class="game-thumb">
-                <div class="game-info">
-                    <div class="category-tag">Korku</div>
-                    <h3 class="game-title">Resident Evil Village</h3>
-                    <div class="game-price">
-                        <span class="price">₺499</span>
-                        <span class="discount">-20%</span>
-                    </div>
-                </div>
-            </div>
+                @endforeach
+            @else
+                <div class="alert alert-info w-100">Popüler oyunlar bulunamadı.</div>
+            @endif
         </div>
+    </section>
+    
+    <section>
+        <h2 class="section-title">
+            Aksiyon Oyunları
+            <a href="{{ url('/games?category=Aksiyon') }}" class="section-title-view-all">Tümünü Gör</a>
+        </h2>
+        <div class="game-grid">
+            @if(isset($actionGames) && count($actionGames) > 0)
+                @foreach($actionGames as $game)
+                <div class="game-card">
+                    <a href="/games/{{ $game->slug }}">
+                        <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
+                        @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                            <div class="owned-badge">
+                                <i class="fas fa-check-circle"></i> Sahip
+                            </div>
+                        @endif
+                        <div class="game-info">
+                            @foreach(explode(',', $game->category) as $cat)
+                                <div class="category-tag">{{ trim($cat) }}</div>
+                            @endforeach
+                            <h3 class="game-title">{{ $game->title }}</h3>
+                            <div class="game-price">
+                                @if($game->discount_price)
+                                    <span class="price">₺{{ $game->discount_price }}</span>
+                                    <span class="discount">-{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}%</span>
+                                @else
+                                    <span class="price">₺{{ $game->price }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            @else
+                <div class="alert alert-info w-100">Aksiyon oyunları bulunamadı.</div>
+            @endif
+        </div>
+    </section>
+    
+    <section>
+        <h2 class="section-title">
+            RPG Oyunları
+            <a href="{{ url('/games?category=RPG') }}" class="section-title-view-all">Tümünü Gör</a>
+        </h2>
+        <div class="game-grid">
+            @if(isset($rpgGames) && count($rpgGames) > 0)
+                @foreach($rpgGames as $game)
+                <div class="game-card">
+                    <a href="/games/{{ $game->slug }}">
+                        <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
+                        @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                            <div class="owned-badge">
+                                <i class="fas fa-check-circle"></i> Sahip
+                            </div>
+                        @endif
+                        <div class="game-info">
+                            @foreach(explode(',', $game->category) as $cat)
+                                <div class="category-tag">{{ trim($cat) }}</div>
+                            @endforeach
+                            <h3 class="game-title">{{ $game->title }}</h3>
+                            <div class="game-price">
+                                @if($game->discount_price)
+                                    <span class="price">₺{{ $game->discount_price }}</span>
+                                    <span class="discount">-{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}%</span>
+                                @else
+                                    <span class="price">₺{{ $game->price }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            @else
+                <div class="alert alert-info w-100">RPG oyunları bulunamadı.</div>
+            @endif
+        </div>
+    </section>
 
-        <div class="pagination">
-            <a href="#" class="page-item prev disabled"><i class="fas fa-chevron-left"></i></a>
-            <a href="#" class="page-item active" data-page="1">1</a>
-            <a href="#" class="page-item" data-page="2">2</a>
-            <a href="#" class="page-item" data-page="3">3</a>
-            <a href="#" class="page-item" data-page="4">4</a>
-            <a href="#" class="page-item next"><i class="fas fa-chevron-right"></i></a>
+    <section>
+        <h2 class="section-title">
+            Spor ve Yarış Oyunları
+            <a href="{{ url('/games?category=Spor&category=Yarış') }}" class="section-title-view-all">Tümünü Gör</a>
+        </h2>
+        <div class="game-grid">
+            @if(isset($sportGames) && count($sportGames) > 0)
+                @foreach($sportGames as $game)
+                <div class="game-card">
+                    <a href="/games/{{ $game->slug }}">
+                        <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
+                        @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                            <div class="owned-badge">
+                                <i class="fas fa-check-circle"></i> Sahip
+                            </div>
+                        @endif
+                        <div class="game-info">
+                            @foreach(explode(',', $game->category) as $cat)
+                                <div class="category-tag">{{ trim($cat) }}</div>
+                            @endforeach
+                            <h3 class="game-title">{{ $game->title }}</h3>
+                            <div class="game-price">
+                                @if($game->discount_price)
+                                    <span class="price">₺{{ $game->discount_price }}</span>
+                                    <span class="discount">-{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}%</span>
+                                @else
+                                    <span class="price">₺{{ $game->price }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            @else
+                <div class="alert alert-info w-100">Spor ve yarış oyunları bulunamadı.</div>
+            @endif
+        </div>
+    </section>
+    
+    <section>
+        <h2 class="section-title">
+            Korku Oyunları
+            <a href="{{ url('/games?category=Korku') }}" class="section-title-view-all">Tümünü Gör</a>
+        </h2>
+        <div class="game-grid">
+            @if(isset($horrorGames) && count($horrorGames) > 0)
+                @foreach($horrorGames as $game)
+                <div class="game-card">
+                    <a href="/games/{{ $game->slug }}">
+                        <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
+                        @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                            <div class="owned-badge">
+                                <i class="fas fa-check-circle"></i> Sahip
+                            </div>
+                        @endif
+                        <div class="game-info">
+                            @foreach(explode(',', $game->category) as $cat)
+                                <div class="category-tag">{{ trim($cat) }}</div>
+                            @endforeach
+                            <h3 class="game-title">{{ $game->title }}</h3>
+                            <div class="game-price">
+                                @if($game->discount_price)
+                                    <span class="price">₺{{ $game->discount_price }}</span>
+                                    <span class="discount">-{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}%</span>
+                                @else
+                                    <span class="price">₺{{ $game->price }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            @else
+                <div class="alert alert-info w-100">Korku oyunları bulunamadı.</div>
+            @endif
+        </div>
+    </section>
+    
+    <section>
+        <h2 class="section-title">
+            Strateji Oyunları
+            <a href="{{ url('/games?category=Strateji') }}" class="section-title-view-all">Tümünü Gör</a>
+        </h2>
+        <div class="game-grid">
+            @if(isset($strategyGames) && count($strategyGames) > 0)
+                @foreach($strategyGames as $game)
+                <div class="game-card">
+                    <a href="/games/{{ $game->slug }}">
+                        <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
+                        @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                            <div class="owned-badge">
+                                <i class="fas fa-check-circle"></i> Sahip
+                            </div>
+                        @endif
+                        <div class="game-info">
+                            @foreach(explode(',', $game->category) as $cat)
+                                <div class="category-tag">{{ trim($cat) }}</div>
+                            @endforeach
+                            <h3 class="game-title">{{ $game->title }}</h3>
+                            <div class="game-price">
+                                @if($game->discount_price)
+                                    <span class="price">₺{{ $game->discount_price }}</span>
+                                    <span class="discount">-{{ round((($game->price - $game->discount_price) / $game->price) * 100) }}%</span>
+                                @else
+                                    <span class="price">₺{{ $game->price }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            @else
+                <div class="alert alert-info w-100">Strateji oyunları bulunamadı.</div>
+            @endif
         </div>
     </section>
 @endsection

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Game;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class DealsController extends Controller
 {
@@ -76,11 +77,18 @@ class DealsController extends Controller
             }
         }
         
+        // Get user's library games
+        $libraryGames = [];
+        if (Auth::check()) {
+            $libraryGames = Session::get('library', []);
+        }
+        
         // Generate personalized deals for logged-in users
         $personalizedDeals = collect();
         if (Auth::check()) {
-            // Get some games that don't already have discounts
+            // Get some games that don't already have discounts and are not in the user's library
             $nonDiscountedGames = Game::whereNull('discount_price')
+                ->whereNotIn('id', $libraryGames) // Skip games the user already owns
                 ->inRandomOrder()
                 ->limit(4)
                 ->get();
@@ -110,7 +118,8 @@ class DealsController extends Controller
             'sort', 
             'direction', 
             'uniqueCategories',
-            'personalizedDeals'
+            'personalizedDeals',
+            'libraryGames'
         ));
     }
 } 

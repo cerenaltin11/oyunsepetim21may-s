@@ -19,6 +19,181 @@
         font-size: 1.8rem;
     }
     
+    .search-hero {
+        background-color: rgba(26, 26, 26, 0.95);
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        background-image: url('data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%239C92AC" fill-opacity="0.05" fill-rule="evenodd"%3E%3Ccircle cx="3" cy="3" r="3"/%3E%3Ccircle cx="13" cy="13" r="3"/%3E%3C/g%3E%3C/svg%3E');
+    }
+    
+    .search-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(26, 159, 255, 0.2), transparent);
+        z-index: 1;
+        animation: gradientAnimation 8s ease infinite;
+    }
+    
+    @keyframes gradientAnimation {
+        0% {
+            opacity: 0.7;
+            background-position: 0% 50%;
+        }
+        50% {
+            opacity: 1;
+            background-position: 100% 50%;
+        }
+        100% {
+            opacity: 0.7;
+            background-position: 0% 50%;
+        }
+    }
+    
+    .search-hero-content {
+        position: relative;
+        z-index: 5;
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .search-hero-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        color: #fff;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .search-hero-subtitle {
+        color: var(--text-gray);
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .search-form {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .search-input-container {
+        position: relative;
+        flex-grow: 1;
+        z-index: 10;
+    }
+    
+    .search-input {
+        width: 100%;
+        background-color: rgba(42, 42, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: white;
+        padding: 0.9rem 1rem 0.9rem 3rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 10;
+    }
+    
+    .search-input:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 2px rgba(26, 159, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3);
+        outline: none;
+        transform: translateY(-1px);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-gray);
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+    }
+    
+    .search-input:focus + .search-icon {
+        color: var(--accent-color);
+    }
+    
+    .search-submit {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 0 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 10;
+    }
+    
+    .search-submit:hover {
+        background-color: #0d8bf0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .search-submit:active {
+        transform: translateY(0);
+    }
+    
+    .search-trending {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .trending-tag {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-gray);
+        font-size: 0.8rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .trending-tag:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .trending-tag:active {
+        transform: scale(0.96);
+    }
+    
+    .trending-tag i {
+        font-size: 0.7rem;
+        opacity: 0.7;
+    }
+    
     .games-filters {
         display: flex;
         flex-wrap: wrap;
@@ -99,6 +274,7 @@
         border-radius: 8px;
         overflow: hidden;
         transition: transform 0.3s;
+        position: relative;
     }
     
     .game-card:hover {
@@ -156,6 +332,7 @@
         background-color: var(--secondary-dark);
         border-radius: 8px;
         overflow: hidden;
+        position: relative;
     }
     
     .game-item-image {
@@ -277,6 +454,113 @@
             margin-top: 1rem;
             align-items: flex-start;
         }
+        
+        .search-hero {
+            padding: 1.5rem 1rem;
+        }
+        
+        .search-hero-title {
+            font-size: 1.5rem;
+        }
+        
+        .search-hero-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .search-form {
+            flex-direction: column;
+        }
+        
+        .search-submit {
+            width: 100%;
+            padding: 0.9rem;
+        }
+        
+        .trending-tag {
+            font-size: 0.75rem;
+        }
+    }
+    
+    .highlight {
+        background-color: rgba(26, 159, 255, 0.2);
+        font-weight: bold;
+        border-radius: 2px;
+        padding: 0 2px;
+    }
+    
+    .search-results-info {
+        margin-top: 1rem;
+        padding: 0.8rem 1rem;
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .search-results-info p {
+        margin: 0;
+    }
+    
+    .search-results-info i {
+        margin-right: 0.5rem;
+        color: var(--accent-color);
+    }
+    
+    .clear-search {
+        color: var(--text-gray);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+    
+    .clear-search:hover {
+        color: white;
+    }
+    
+    .clear-search i {
+        font-size: 0.8rem;
+    }
+    
+    .owned-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(76, 175, 80, 0.9);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        z-index: 5;
+    }
+    
+    .owned-badge i {
+        font-size: 0.9rem;
+    }
+    
+    .owned-badge-list {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(76, 175, 80, 0.9);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        z-index: 5;
     }
 </style>
 @endsection
@@ -287,12 +571,40 @@
             <h1 class="games-title">Tüm Oyunlar</h1>
             
             <div class="games-layout">
-                <button class="layout-btn active" onclick="changeLayout('grid')">
+                <button id="grid-view" class="layout-btn active" type="button">
                     <i class="fas fa-th"></i>
                 </button>
-                <button class="layout-btn" onclick="changeLayout('list')">
+                <button id="list-view" class="layout-btn" type="button">
                     <i class="fas fa-list"></i>
                 </button>
+            </div>
+        </div>
+        
+        <div class="search-hero">
+            <div class="search-hero-content">
+                <h2 class="search-hero-title">Arama</h2>
+                <p class="search-hero-subtitle">Aradığınız oyunu bulun.</p>
+                <form class="search-form" action="{{ url('/games') }}" method="GET">
+                    <div class="search-input-container">
+                        <input type="text" name="search" class="search-input" placeholder="Oyun adı, kategori veya açıklama..." value="{{ request('search') }}">
+                        <i class="search-icon fas fa-search"></i>
+                    </div>
+                    <button type="submit" class="search-submit">Ara</button>
+                </form>
+                <div class="search-trending">
+                    <span class="trending-tag" data-search="RPG"><i class="fas fa-dice-d20"></i> RPG</span>
+                    <span class="trending-tag" data-search="FPS"><i class="fas fa-crosshairs"></i> FPS</span>
+                    <span class="trending-tag" data-search="Macera"><i class="fas fa-compass"></i> Macera</span>
+                    <span class="trending-tag" data-search="Strateji"><i class="fas fa-chess"></i> Strateji</span>
+                    <span class="trending-tag" data-search="Spor"><i class="fas fa-futbol"></i> Spor</span>
+                </div>
+                
+                @if(request('search'))
+                <div class="search-results-info">
+                    <p><i class="fas fa-info-circle"></i> "{{ request('search') }}" için {{ $games->total() }} sonuç bulundu.</p>
+                    <a href="{{ url('/games') }}" class="clear-search">Aramayı Temizle <i class="fas fa-times"></i></a>
+                </div>
+                @endif
             </div>
         </div>
         
@@ -333,6 +645,11 @@
                 <div class="game-card">
                     <a href="/games/{{ $game->slug }}">
                         <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
+                        @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                            <div class="owned-badge">
+                                <i class="fas fa-check-circle"></i> Sahip
+                            </div>
+                        @endif
                         <div class="game-info">
                             @foreach(explode(',', $game->category) as $cat)
                                 <div class="category-tag">{{ trim($cat) }}</div>
@@ -363,6 +680,11 @@
                 @foreach($games as $game)
                 <div class="game-item-list">
                     <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-item-image">
+                    @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                        <div class="owned-badge-list">
+                            <i class="fas fa-check-circle"></i> Sahip
+                        </div>
+                    @endif
                     <div class="game-item-info">
                         <div class="game-item-left">
                             <h3 class="game-item-title">{{ $game->title }}</h3>
@@ -443,44 +765,50 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Grid veya liste görünümünü değiştir fonksiyonu
-        window.changeLayout = function(layout) {
-            const gridView = document.getElementById('gridView');
-            const listView = document.getElementById('listView');
-            const layoutButtons = document.querySelectorAll('.layout-btn');
+        // Grid/List view toggle
+        const gridViewBtn = document.getElementById('grid-view');
+        const listViewBtn = document.getElementById('list-view');
+        const gamesGrid = document.querySelector('.games-grid');
+        const gamesList = document.querySelector('.games-list');
+        
+        if (gridViewBtn && listViewBtn) {
+            gridViewBtn.addEventListener('click', function() {
+                gridViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+                gamesGrid.style.display = 'grid';
+                gamesList.style.display = 'none';
+                
+                // Save preference to local storage
+                localStorage.setItem('gamesViewPreference', 'grid');
+            });
             
-            if (layout === 'grid') {
-                gridView.style.display = 'grid';
-                listView.style.display = 'none';
-                layoutButtons[0].classList.add('active');
-                layoutButtons[1].classList.remove('active');
+            listViewBtn.addEventListener('click', function() {
+                listViewBtn.classList.add('active');
+                gridViewBtn.classList.remove('active');
+                gamesList.style.display = 'flex';
+                gamesGrid.style.display = 'none';
+                
+                // Save preference to local storage
+                localStorage.setItem('gamesViewPreference', 'list');
+            });
+            
+            // Load preference from local storage
+            const viewPreference = localStorage.getItem('gamesViewPreference');
+            if (viewPreference === 'list') {
+                listViewBtn.click();
             } else {
-                gridView.style.display = 'none';
-                listView.style.display = 'flex';
-                layoutButtons[0].classList.remove('active');
-                layoutButtons[1].classList.add('active');
+                gridViewBtn.click();
             }
-        };
+        }
         
-        // Filtre butonunu aktif/pasif yap
-        window.toggleFilter = function(button, filter) {
-            button.classList.toggle('active');
-            
-            // Burada filtreleme işlemleri yapılacak
-            applyFilters();
-        };
-        
-        // Kategori ve sıralama filtrelerini al
-        const categoryFilter = document.getElementById('category-filter');
-        const sortFilter = document.getElementById('sort-filter');
-        
-        // Filtreleri uygula
+        // Filter functionality
         window.applyFilters = function() {
             // URL oluştur
             let url = new URL(window.location.href);
             let params = new URLSearchParams(url.search);
             
             // Kategori parametresi
+            const categoryFilter = document.getElementById('category-filter');
             const category = categoryFilter.value;
             if (category && category !== 'all') {
                 params.set('category', category);
@@ -489,6 +817,7 @@
             }
             
             // Sıralama parametreleri
+            const sortFilter = document.getElementById('sort-filter');
             const sortValue = sortFilter.value.split('-');
             if (sortValue.length === 2) {
                 params.set('sort', sortValue[0]);
@@ -506,11 +835,65 @@
             window.location.href = url.toString();
         };
         
-        // Oyunları sırala
-        window.sortGames = function() {
-            // Burada seçilen sıralama türüne göre oyunlar sıralanacak
-            console.log('Oyunlar sıralanıyor...');
+        window.toggleFilter = function(button, filter) {
+            button.classList.toggle('active');
+            
+            // Burada filtreleme işlemleri yapılacak
+            applyFilters();
         };
+        
+        // Trending tags functionality
+        const trendingTags = document.querySelectorAll('.trending-tag');
+        const searchInput = document.querySelector('input[name="search"]');
+        const searchForm = document.querySelector('.search-form');
+        
+        trendingTags.forEach(tag => {
+            tag.addEventListener('click', function() {
+                const searchTerm = this.getAttribute('data-search');
+                searchInput.value = searchTerm;
+                // Submit the form
+                searchForm.submit();
+            });
+        });
+        
+        // Search input animations
+        if (searchInput) {
+            searchInput.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.01)';
+            });
+            
+            searchInput.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+            
+            // Clear search with Esc key
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    this.value = '';
+                    this.focus();
+                }
+            });
+        }
+        
+        // If there's a search query, highlight it in the game cards
+        const searchQuery = "{{ request('search') }}";
+        if (searchQuery) {
+            highlightSearchTerms(searchQuery);
+        }
+        
+        function highlightSearchTerms(query) {
+            if (!query) return;
+            
+            // Highlight in titles
+            const gameTitles = document.querySelectorAll('.game-title, .game-item-title');
+            gameTitles.forEach(title => {
+                const originalText = title.textContent;
+                if (originalText.toLowerCase().includes(query.toLowerCase())) {
+                    const regex = new RegExp(query, 'gi');
+                    title.innerHTML = originalText.replace(regex, match => `<span class="highlight">${match}</span>`);
+                }
+            });
+        }
     });
 </script>
 @endsection 

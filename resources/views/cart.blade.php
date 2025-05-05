@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Facades\Auth;
+@endphp
+
 @extends('layouts.app')
 
 @section('title', 'Sepetim')
@@ -292,6 +296,53 @@
         color: #e91e63;
         font-weight: bold;
     }
+    
+    .auth-required {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 3rem;
+        background-color: var(--secondary-dark);
+        border-radius: 8px;
+        margin: 2rem auto;
+        max-width: 600px;
+    }
+    
+    .auth-required-icon {
+        font-size: 4rem;
+        color: var(--accent-color);
+        margin-bottom: 1.5rem;
+    }
+    
+    .auth-required-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+    
+    .auth-required-text {
+        margin-bottom: 1.5rem;
+        color: var(--text-gray);
+    }
+    
+    .auth-btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: var(--accent-color);
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s;
+        margin: 0 0.5rem;
+    }
+    
+    .auth-btn:hover {
+        background-color: var(--accent-dark);
+        transform: translateY(-2px);
+    }
 </style>
 @endsection
 
@@ -317,109 +368,123 @@
             </div>
         @endif
         
-        @if(count($cartItems) > 0)
-            <div class="cart-grid">
-                <div class="cart-items">
-                    @foreach($cartItems as $item)
-                        <div class="cart-item {{ $item['is_personalized'] ? 'personalized-item' : '' }}">
-                            @if($item['is_personalized'])
-                                <div class="personalized-deal-badge">
-                                    <i class="fas fa-star"></i> Size Özel İndirim
-                                </div>
-                            @endif
-                            
-                            <img src="{{ $item['image'] }}" alt="{{ $item['title'] }}" class="cart-item-image">
-                            
-                            <div class="cart-item-info">
-                                <h3 class="cart-item-title">{{ $item['title'] }}</h3>
-                                <span class="cart-item-category">{{ $item['category'] }}</span>
+        @if(Auth::check())
+            @if(isset($cartItems) && count($cartItems) > 0)
+                <div class="cart-grid">
+                    <div class="cart-items">
+                        @foreach($cartItems as $item)
+                            <div class="cart-item {{ $item['is_personalized'] ? 'personalized-item' : '' }}">
+                                @if($item['is_personalized'])
+                                    <div class="personalized-deal-badge">
+                                        <i class="fas fa-star"></i> Size Özel İndirim
+                                    </div>
+                                @endif
                                 
-                                <div class="cart-item-price">
-                                    @if($item['discount_price'])
-                                        <span class="price {{ $item['is_personalized'] ? 'personalized-discount' : '' }}">₺{{ $item['discount_price'] }}</span>
-                                        <span class="discount {{ $item['is_personalized'] ? 'personalized-discount' : '' }}">-{{ round((($item['price'] - $item['discount_price']) / $item['price']) * 100) }}%</span>
-                                        @if($item['is_personalized'])
-                                            <small class="personalized-text">Kişiye özel indirim</small>
+                                <img src="{{ $item['image'] }}" alt="{{ $item['title'] }}" class="cart-item-image">
+                                
+                                <div class="cart-item-info">
+                                    <h3 class="cart-item-title">{{ $item['title'] }}</h3>
+                                    <span class="cart-item-category">{{ $item['category'] }}</span>
+                                    
+                                    <div class="cart-item-price">
+                                        @if($item['discount_price'])
+                                            <span class="price {{ $item['is_personalized'] ? 'personalized-discount' : '' }}">₺{{ $item['discount_price'] }}</span>
+                                            <span class="discount {{ $item['is_personalized'] ? 'personalized-discount' : '' }}">-{{ round((($item['price'] - $item['discount_price']) / $item['price']) * 100) }}%</span>
+                                            @if($item['is_personalized'])
+                                                <small class="personalized-text">Kişiye özel indirim</small>
+                                            @endif
+                                        @else
+                                            <span class="price">₺{{ $item['price'] }}</span>
                                         @endif
-                                    @else
-                                        <span class="price">₺{{ $item['price'] }}</span>
-                                    @endif
+                                    </div>
+                                </div>
+                                
+                                <div class="cart-item-actions">
+                                    <a href="{{ route('cart.remove', ['gameId' => $item['id']]) }}" class="cart-item-remove">
+                                        <i class="fas fa-trash-alt"></i> Kaldır
+                                    </a>
                                 </div>
                             </div>
-                            
-                            <div class="cart-item-actions">
-                                <a href="{{ route('cart.remove', ['gameId' => $item['id']]) }}" class="cart-item-remove">
-                                    <i class="fas fa-trash-alt"></i> Kaldır
-                                </a>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                
-                <div class="cart-summary">
-                    <h2 class="summary-title">Sipariş Özeti</h2>
-                    
-                    <div class="summary-row">
-                        <span class="summary-label">Ürünler ({{ $totalCount }})</span>
-                        <span class="summary-value">₺{{ $totalPrice + $discount }}</span>
+                        @endforeach
                     </div>
                     
-                    @if($discount > 0)
+                    <div class="cart-summary">
+                        <h2 class="summary-title">Sipariş Özeti</h2>
+                        
                         <div class="summary-row">
-                            <span class="summary-label">İndirim</span>
-                            <span class="summary-value">-₺{{ $discount }}</span>
+                            <span class="summary-label">Ürünler ({{ $totalCount }})</span>
+                            <span class="summary-value">₺{{ $totalPrice + $discount }}</span>
                         </div>
-                    @endif
-                    
-                    <div class="promo-code">
-                        <p>Promosyon Kodu</p>
-                        <div class="promo-input">
-                            <input type="text" placeholder="Kod girin">
-                            <button class="btn btn-primary">Uygula</button>
+                        
+                        @if($discount > 0)
+                            <div class="summary-row">
+                                <span class="summary-label">İndirim</span>
+                                <span class="summary-value">-₺{{ $discount }}</span>
+                            </div>
+                        @endif
+                        
+                        <div class="promo-code">
+                            <p>Promosyon Kodu</p>
+                            <div class="promo-input">
+                                <input type="text" placeholder="Kod girin">
+                                <button class="btn btn-primary">Uygula</button>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="summary-row summary-total">
-                        <span class="summary-label">Toplam</span>
-                        <span class="summary-value">₺{{ $totalPrice }}</span>
-                    </div>
-                    
-                    <form action="{{ route('cart.checkout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="checkout-btn">Ödemeye Geç</button>
-                    </form>
-                    
-                    <div class="cart-actions">
-                        <a href="{{ route('cart.clear') }}" class="clear-cart-btn">Sepeti Temizle</a>
-                    </div>
-                    
-                    <div class="payment-options">
-                        <p class="payment-title">Ödeme Seçenekleri</p>
-                        <div class="payment-cards">
-                            <div class="payment-card">
-                                <i class="fab fa-cc-visa"></i>
-                            </div>
-                            <div class="payment-card">
-                                <i class="fab fa-cc-mastercard"></i>
-                            </div>
-                            <div class="payment-card">
-                                <i class="fab fa-cc-paypal"></i>
-                            </div>
-                            <div class="payment-card">
-                                <i class="fab fa-bitcoin"></i>
+                        
+                        <div class="summary-row summary-total">
+                            <span class="summary-label">Toplam</span>
+                            <span class="summary-value">₺{{ $totalPrice }}</span>
+                        </div>
+                        
+                        <form action="{{ route('cart.checkout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="checkout-btn">Ödemeye Geç</button>
+                        </form>
+                        
+                        <div class="cart-actions">
+                            <a href="{{ route('cart.clear') }}" class="clear-cart-btn">Sepeti Temizle</a>
+                        </div>
+                        
+                        <div class="payment-options">
+                            <p class="payment-title">Ödeme Seçenekleri</p>
+                            <div class="payment-cards">
+                                <div class="payment-card">
+                                    <i class="fab fa-cc-visa"></i>
+                                </div>
+                                <div class="payment-card">
+                                    <i class="fab fa-cc-mastercard"></i>
+                                </div>
+                                <div class="payment-card">
+                                    <i class="fab fa-cc-paypal"></i>
+                                </div>
+                                <div class="payment-card">
+                                    <i class="fab fa-bitcoin"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @else
+                <div class="empty-cart">
+                    <div class="empty-cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h2>Sepetiniz boş</h2>
+                    <p class="empty-cart-text">Henüz sepetinize ürün eklemediniz. Keşfetmeye başlayın!</p>
+                    <a href="{{ url('/games') }}" class="btn btn-primary">Oyunları Keşfet</a>
+                </div>
+            @endif
         @else
-            <div class="empty-cart">
-                <div class="empty-cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
+            <div class="auth-required">
+                <div class="auth-required-icon">
+                    <i class="fas fa-lock"></i>
                 </div>
-                <h2>Sepetiniz Boş</h2>
-                <p class="empty-cart-text">Sepetinize henüz bir ürün eklemediniz. Hemen alışverişe başlayın.</p>
-                <a href="/games" class="btn btn-primary">Oyunları Keşfet</a>
+                <h2 class="auth-required-title">Giriş Yapmanız Gerekiyor</h2>
+                <p class="auth-required-text">Sepetinize erişmek ve alışveriş yapmak için lütfen giriş yapın veya kayıt olun.</p>
+                <div>
+                    <a href="{{ route('login') }}" class="auth-btn">Giriş Yap</a>
+                    <a href="{{ route('register') }}" class="auth-btn">Kayıt Ol</a>
+                </div>
             </div>
         @endif
     </div>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Game;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
@@ -67,7 +69,13 @@ class GameController extends Controller
             }
         }
         
-        return view('games.index', compact('games', 'search', 'category', 'sort', 'direction', 'uniqueCategories'));
+        // Kullanıcının kütüphanesindeki oyunları al
+        $libraryGames = [];
+        if (Auth::check()) {
+            $libraryGames = Session::get('library', []);
+        }
+        
+        return view('games.index', compact('games', 'search', 'category', 'sort', 'direction', 'uniqueCategories', 'libraryGames'));
     }
     
     /**
@@ -79,7 +87,15 @@ class GameController extends Controller
     public function show($slug)
     {
         $game = Game::where('slug', $slug)->firstOrFail();
-        return view('games.detail', compact('game'));
+        
+        // Kullanıcının oyunu zaten sahip olup olmadığını kontrol et
+        $hasGame = false;
+        if (Auth::check()) {
+            $library = Session::get('library', []);
+            $hasGame = in_array($game->id, $library);
+        }
+        
+        return view('games.detail', compact('game', 'hasGame'));
     }
     
     /**

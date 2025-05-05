@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             GameSeeder::class,
             GamesTableSeeder::class,
             EmergencyGameSeeder::class,
+            BadgeSeeder::class,
         ]);
     }
 }

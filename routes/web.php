@@ -30,6 +30,26 @@ Route::get('/', function() {
     return view('temp-home');
 })->name('home');
 
+// About page
+Route::get('/about', function() {
+    return view('about');
+})->name('about');
+
+// Contact page
+Route::get('/contact', function() {
+    return view('contact');
+})->name('contact');
+
+// Privacy Policy page
+Route::get('/privacy', function() {
+    return view('privacy');
+})->name('privacy');
+
+// Terms of Service page
+Route::get('/terms', function() {
+    return view('terms');
+})->name('terms');
+
 // Database check route
 Route::get('/check-games', function() {
     $games = \App\Models\Game::all();
@@ -146,6 +166,39 @@ Route::post('/login', function () {
     if (\Illuminate\Support\Facades\Auth::attempt($credentials)) {
         request()->session()->regenerate();
         
+        // Track login for daily reward system
+        $user = \Illuminate\Support\Facades\Auth::user();
+        
+        // Only update login tracking if it's a new day or first login
+        if (!$user->last_login_at || !$user->last_login_at->isToday()) {
+            // Update login stats
+            $lastLogin = $user->last_login_at;
+            $now = now();
+            
+            // Update previous login time
+            $user->previous_login_at = $lastLogin;
+            
+            // Update last login time - Ana sayfada ödül gösterilsin diye şimdilik güncelleme yapmayalım
+            // $user->last_login_at = $now;
+            
+            // Increment login count
+            $user->login_count++;
+            
+            // Check consecutive days
+            if ($lastLogin && $now->diffInDays($lastLogin) == 1) {
+                // If user logged in yesterday
+                $user->consecutive_days++;
+            } elseif ($lastLogin && $now->diffInDays($lastLogin) > 1) {
+                // If user didn't log in yesterday, reset streak
+                $user->consecutive_days = 1;
+            } elseif (!$lastLogin) {
+                // First login
+                $user->consecutive_days = 1;
+            }
+            
+            $user->save();
+        }
+        
         // Redirect to home page if login successful
         return redirect('/');
     }
@@ -173,7 +226,18 @@ Route::post('/register', function () {
         'name' => $data['name'],
         'email' => $data['email'],
         'password' => \Illuminate\Support\Facades\Hash::make($data['password']),
+        'last_login_at' => now(),
+        'login_count' => 1,
+        'consecutive_days' => 1,
     ]);
+    
+    // Give the first login badge
+    $firstLoginBadge = \App\Models\Badge::where('name', 'first_login')->first();
+    if ($firstLoginBadge) {
+        $user->badges()->attach($firstLoginBadge->id, [
+            'awarded_at' => now()
+        ]);
+    }
     
     // Log the user in
     \Illuminate\Support\Facades\Auth::login($user);
@@ -283,5 +347,98 @@ Route::get('/fix-database', function() {
         }
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
+    }
+});
+
+// Add daily reward routes
+Route::get('/daily-reward/check', [\App\Http\Controllers\DailyRewardController::class, 'check'])->name('daily-reward.check');
+Route::post('/daily-reward/claim', [\App\Http\Controllers\DailyRewardController::class, 'claim'])->name('daily-reward.claim');
+
+// Add user badges route
+Route::get('/profile/badges', function() {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+    
+    $user = auth()->user();
+    
+    // Check if user is admin and give admin badge
+    if ($user->is_admin) {
+        $adminBadge = \App\Models\Badge::where('name', 'admin_badge')->first();
+        if ($adminBadge && !$user->hasBadge($adminBadge->id)) {
+            $user->badges()->attach($adminBadge->id, [
+                'awarded_at' => now()
+            ]);
+        }
+    }
+    
+    $userBadges = $user->badges;
+    $allBadges = \App\Models\Badge::all();
+    
+    return view('profile-badges', [
+        'badges' => $userBadges,
+        'allBadges' => $allBadges
+    ]);
+})->name('profile.badges');
+
+// Test route to award ultimate badge (remove in production)
+Route::get('/give-ultimate-badge', function() {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+    
+    $user = auth()->user();
+    $ultimateBadge = \App\Models\Badge::where('name', 'ultimate_login')->first();
+    
+    if ($ultimateBadge && !$user->hasBadge($ultimateBadge->id)) {
+        $user->badges()->attach($ultimateBadge->id, [
+            'awarded_at' => now()
+        ]);
+        return "Ultimate badge awarded successfully! <a href='/profile/badges'>View your badges</a>";
+    }
+    
+    return "You already have the ultimate badge. <a href='/profile/badges'>View your badges</a>";
+});
+
+// Test route to award admin badge (remove in production)
+Route::get('/give-admin-badge', function() {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+    
+    $user = auth()->user();
+    $adminBadge = \App\Models\Badge::where('name', 'admin_badge')->first();
+    
+    if ($adminBadge && !$user->hasBadge($adminBadge->id)) {
+        $user->badges()->attach($adminBadge->id, [
+            'awarded_at' => now()
+        ]);
+        return "Admin badge awarded successfully! <a href='/profile/badges'>View your badges</a>";
+    }
+    
+    return "You already have the admin badge. <a href='/profile/badges'>View your badges</a>";
+});
+
+// Test route to toggle admin status (remove in production)
+Route::get('/toggle-admin', function() {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+    
+    $user = auth()->user();
+    $user->is_admin = !$user->is_admin;
+    $user->save();
+    
+    // If becoming admin, also award the admin badge
+    if ($user->is_admin) {
+        $adminBadge = \App\Models\Badge::where('name', 'admin_badge')->first();
+        if ($adminBadge && !$user->hasBadge($adminBadge->id)) {
+            $user->badges()->attach($adminBadge->id, [
+                'awarded_at' => now()
+            ]);
+        }
+        return "Admin status enabled! <a href='/profile/badges'>View your badges</a>";
+    } else {
+        return "Admin status disabled. <a href='/profile/badges'>View your badges</a>";
     }
 });

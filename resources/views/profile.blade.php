@@ -11,6 +11,103 @@
         --glow-effect: 0 0 15px rgba(26, 159, 255, 0.3);
     }
     
+    /* Admin styling */
+    @keyframes admin-pulse-bg {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .admin-profile {
+        position: relative;
+        animation: admin-entrance 0.6s ease-out forwards;
+    }
+    
+    .admin-profile::before {
+        content: '';
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        background: linear-gradient(45deg, #600, #900, #a00, #900, #600);
+        background-size: 400% 400%;
+        z-index: -1;
+        border-radius: 15px;
+        filter: blur(10px);
+        opacity: 0.3;
+        animation: admin-pulse-bg 10s ease infinite;
+    }
+    
+    @keyframes admin-entrance {
+        0% {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.02);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    .admin-entrance-effect {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at center, rgba(150, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 70%);
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0;
+        animation: admin-entrance-bg 1.5s ease-out forwards;
+    }
+    
+    @keyframes admin-entrance-bg {
+        0% {
+            opacity: 0;
+        }
+        30% {
+            opacity: 0.8;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
+    
+    .admin-badge-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(150, 0, 0, 0.3);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+    
+    .admin-badge-indicator i {
+        color: #ff3333;
+        font-size: 20px;
+    }
+    
+    @keyframes admin-pulse {
+        0% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); }
+        50% { box-shadow: 0 0 25px rgba(255, 0, 0, 0.6); }
+        100% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); }
+    }
+    
+    .admin-badge-pulse {
+        animation: admin-pulse 2s infinite;
+    }
+    
+    /* Normal profile styling */
     .profile-container {
         background-color: var(--secondary-dark);
         border-radius: 12px;
@@ -90,6 +187,48 @@
     .profile-photo-placeholder {
         color: var(--text-gray);
         font-size: 3rem;
+    }
+    
+    /* Profile badges display in header */
+    .user-badges-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .profile-badge-icon {
+        background-color: rgba(26, 159, 255, 0.1);
+        color: #1a9fff;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        box-shadow: 0 0 10px rgba(26, 159, 255, 0.2);
+        transition: all 0.2s ease;
+    }
+    
+    .profile-badge-icon:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(26, 159, 255, 0.4);
+    }
+    
+    .more-badges {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-gray);
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .more-badges:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: var(--text-light);
     }
     
     .dashboard-content {
@@ -521,16 +660,112 @@
             background-color: var(--accent-color);
         }
     }
+    
+    /* Rozet stilleri */
+    .profile-badges-section {
+        margin-top: 2rem;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+    
+    .badge-item {
+        background: rgba(30, 30, 30, 0.5);
+        border-radius: 8px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    
+    .badge-item:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-soft);
+        background: rgba(35, 35, 35, 0.7);
+    }
+    
+    .badge-icon {
+        background-color: rgba(26, 159, 255, 0.1);
+        color: #1a9fff;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        box-shadow: var(--glow-effect);
+    }
+    
+    .badge-info h4 {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin: 0;
+    }
+    
+    .empty-badges-message {
+        background: rgba(30, 30, 30, 0.5);
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-gray);
+    }
+    
+    .empty-badges-message i {
+        font-size: 2.5rem;
+        color: rgba(255, 255, 255, 0.1);
+        margin-bottom: 1rem;
+    }
+    
+    /* Düğme stilleri */
+    .btn-secondary {
+        padding: 0.7rem 1.2rem;
+        background-color: rgba(26, 159, 255, 0.1);
+        color: #1a9fff;
+        border: 1px solid rgba(26, 159, 255, 0.2);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .btn-secondary:hover {
+        background-color: rgba(26, 159, 255, 0.2);
+        border-color: rgba(26, 159, 255, 0.3);
+        transform: translateY(-2px);
+    }
 </style>
 @endsection
 
 @section('content')
-    <div class="profile-container">
+    @if(Auth::user()->is_admin)
+    <div class="admin-entrance-effect"></div>
+    @endif
+    
+    <div class="profile-container {{ Auth::user()->is_admin ? 'admin-profile' : '' }}">
         <div class="profile-banner" 
             @if(Auth::user()->banner)
             style="background: url('{{ asset('images/banners/' . Auth::user()->banner) }}'); background-size: cover; background-position: center;"
             @endif
-        ></div>
+        >
+            @if(Auth::user()->is_admin)
+            <div class="admin-badge-indicator admin-badge-pulse">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            @endif
+        </div>
         
         <div class="profile-header">
             <div class="profile-photo">
@@ -543,6 +778,25 @@
             <div class="profile-info">
                 <h1>Hoş Geldiniz, {{ Auth::user()->name }}</h1>
                 <p>{{ Auth::user()->email }}</p>
+                @if(Auth::user()->is_admin)
+                <div style="margin-top: 5px; color: #ff3333;">
+                    <i class="fas fa-shield-alt"></i> Yönetici
+                </div>
+                @endif
+                @if(Auth::user()->badges->count() > 0)
+                    <div class="user-badges-display">
+                        @foreach(Auth::user()->badges->take(3) as $badge)
+                            <span class="profile-badge-icon {{ $badge->name == 'admin_badge' ? 'admin-badge-pulse' : '' }}" 
+                                  style="{{ $badge->name == 'admin_badge' ? 'background-color: rgba(150, 0, 0, 0.1); color: #ff3333;' : '' }}{{ $badge->name == 'ultimate_login' ? 'background-color: rgba(255, 215, 0, 0.1); color: #FFD700;' : '' }}"
+                                  title="{{ $badge->description }}">
+                                <i class="fas {{ $badge->icon }}"></i>
+                            </span>
+                        @endforeach
+                        @if(Auth::user()->badges->count() > 3)
+                            <a href="{{ route('profile.badges') }}" class="more-badges">+{{ Auth::user()->badges->count() - 3 }}</a>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
         
@@ -651,6 +905,37 @@
                 <button type="submit" class="btn btn-primary">Bilgileri Güncelle</button>
             </div>
         </form>
+        
+        <!-- Kullanıcı rozetleri bölümü -->
+        <div class="section-divider"></div>
+        <div class="profile-badges-section">
+            <div class="section-header">
+                <h2>Rozetlerim</h2>
+                <a href="{{ route('profile.badges') }}" class="btn btn-secondary">Tüm Rozetleri Gör</a>
+            </div>
+            
+            <div class="badges-preview">
+                @if(Auth::user()->badges->count() > 0)
+                    <div class="badges-grid">
+                        @foreach(Auth::user()->badges->take(4) as $badge)
+                            <div class="badge-item">
+                                <div class="badge-icon">
+                                    <i class="fas {{ $badge->icon }}"></i>
+                                </div>
+                                <div class="badge-info">
+                                    <h4>{{ $badge->description }}</h4>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="empty-badges-message">
+                        <i class="fas fa-award"></i>
+                        <p>Henüz hiç rozet kazanmadınız. Günlük giriş yaparak ve site aktivitelerinizle rozetler kazanabilirsiniz.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
             </div>
         
             <!-- Şifre değiştir sekmesi -->

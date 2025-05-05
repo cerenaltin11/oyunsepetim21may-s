@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,13 +18,128 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     
     <style>
+        /* Theme Variables */
         :root {
+            /* Dark theme (default) */
             --primary-dark: #121212;
             --secondary-dark: #1e1e1e;
             --accent-dark: #2a2a2a;
             --text-light: #f1f1f1;
             --text-gray: #a0a0a0;
             --accent-color: #1a9fff;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --border-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Light theme */
+        [data-theme="light"] {
+            --primary-dark: #f5f5f5;
+            --secondary-dark: #ffffff;
+            --accent-dark: #e8e8e8;
+            --text-light: #333333;
+            --text-gray: #666666;
+            --accent-color: #1a9fff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Global styling for users with ultimate badge */
+        @if(auth()->check() && auth()->user()->hasUltimateBadge())
+        body {
+            background-color: var(--primary-dark);
+            background-image: linear-gradient(to bottom, rgba(255, 215, 0, 0.03), rgba(0, 0, 0, 0));
+        }
+        
+        .navbar {
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2) !important;
+        }
+        
+        .profile-photo {
+            border: 4px solid #FFD700 !important;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
+        }
+        
+        .profile-info h1 {
+            color: #FFD700 !important;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4) !important;
+        }
+        @endif
+        
+        /* Global styling for admin users */
+        @if(auth()->check() && auth()->user()->is_admin)
+        body {
+            background-color: var(--primary-dark);
+            background-image: linear-gradient(to bottom, rgba(150, 0, 0, 0.05), rgba(0, 0, 0, 0));
+        }
+        
+        .navbar {
+            border-bottom: 1px solid rgba(255, 0, 0, 0.2) !important;
+        }
+        
+        .profile-photo {
+            border: 4px solid #990000 !important;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3) !important;
+        }
+        
+        .profile-info h1 {
+            color: #ff3333 !important;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.4) !important;
+        }
+        
+        @keyframes admin-pulse {
+            0% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 0, 0, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); }
+        }
+        
+        .admin-badge {
+            animation: admin-pulse 2s infinite;
+        }
+        @endif
+        
+        /* Theme toggle styles */
+        .theme-toggle {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 40px;
+            height: 24px;
+            background-color: var(--accent-dark);
+            border-radius: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .theme-toggle::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            background-color: var(--accent-color);
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="light"] .theme-toggle::after {
+            transform: translateX(16px);
+        }
+        
+        .theme-toggle i {
+            position: absolute;
+            color: var(--text-light);
+            font-size: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .theme-toggle .fa-sun {
+            right: 4px;
+        }
+        
+        .theme-toggle .fa-moon {
+            left: 4px;
         }
         
         body {
@@ -33,16 +148,18 @@
             color: var(--text-light);
             margin: 0;
             padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         .navbar {
             background-color: var(--secondary-dark);
             padding: 0.7rem 2rem;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 12px var(--shadow-color);
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-bottom 0.3s ease;
         }
         
         .navbar-content {
@@ -504,6 +621,12 @@
                     @endif
                 </a>
                 
+                <!-- Theme Toggle Button -->
+                <div class="theme-toggle" id="theme-toggle" title="Tema Değiştir">
+                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun"></i>
+                </div>
+                
                 @auth
                     <div class="user-dropdown">
                         <div class="dropdown-btn">
@@ -523,6 +646,7 @@
                             @endif
                             <a href="/dashboard"><i class="fas fa-user"></i> Kullanıcı Paneli</a>
                             <a href="/orders"><i class="fas fa-history"></i> Satın Alma Geçmişi</a>
+                            <a href="#" id="dropdown-theme-toggle"><i class="fas fa-adjust"></i> <span id="theme-text">Açık Tema</span></a>
                             <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt"></i> Çıkış Yap
                             </a>
@@ -593,6 +717,56 @@
             
             // Dropdown menü işlevini başlat
             setupDropdownMenu();
+            
+            // Theme switching functionality
+            function setupThemeToggle() {
+                const themeToggle = document.getElementById('theme-toggle');
+                const dropdownThemeToggle = document.getElementById('dropdown-theme-toggle');
+                const themeText = document.getElementById('theme-text');
+                const htmlElement = document.documentElement;
+                
+                // Check for saved theme preference or use default
+                const savedTheme = localStorage.getItem('theme') || 'dark';
+                htmlElement.setAttribute('data-theme', savedTheme);
+                
+                // Update theme text based on current theme
+                updateThemeText(savedTheme);
+                
+                // Handle main theme toggle click
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', function() {
+                        toggleTheme();
+                    });
+                }
+                
+                // Handle dropdown theme toggle click
+                if (dropdownThemeToggle) {
+                    dropdownThemeToggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        toggleTheme();
+                    });
+                }
+                
+                // Function to toggle theme
+                function toggleTheme() {
+                    const currentTheme = htmlElement.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    
+                    htmlElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeText(newTheme);
+                }
+                
+                // Function to update theme text
+                function updateThemeText(theme) {
+                    if (themeText) {
+                        themeText.textContent = theme === 'dark' ? 'Açık Tema' : 'Koyu Tema';
+                    }
+                }
+            }
+            
+            // Start theme toggle functionality
+            setupThemeToggle();
         });
     </script>
 </body>

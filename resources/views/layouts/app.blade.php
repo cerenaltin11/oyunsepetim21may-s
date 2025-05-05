@@ -43,6 +43,50 @@
             --border-color: rgba(0, 0, 0, 0.1);
         }
         
+        /* Color Inversion Container */
+        .invert-container {
+            min-height: 100vh;
+            transition: filter 0.3s ease;
+        }
+        
+        .invert-container.inverted {
+            filter: invert(100%) hue-rotate(180deg);
+        }
+        
+        .invert-container.inverted img,
+        .invert-container.inverted .user-avatar img {
+            filter: invert(100%) hue-rotate(180deg);
+        }
+        
+        /* Invert Toggle Button */
+        .invert-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .invert-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+        
+        .invert-toggle i {
+            font-size: 24px;
+        }
+        
         /* Global styling for users with ultimate badge */
         @if(auth()->check() && auth()->user()->hasUltimateBadge())
         body {
@@ -67,6 +111,11 @@
         
         /* Global styling for admin users */
         @if(auth()->check() && auth()->user()->is_admin)
+        /* Override accent color for admin users */
+        :root {
+            --accent-color: #ff3333;
+        }
+        
         body {
             background-color: var(--primary-dark);
             background-image: linear-gradient(to bottom, rgba(150, 0, 0, 0.05), rgba(0, 0, 0, 0));
@@ -74,6 +123,7 @@
         
         .navbar {
             border-bottom: 1px solid rgba(255, 0, 0, 0.2) !important;
+            background: linear-gradient(to right, rgba(30, 30, 30, 0.98), rgba(60, 10, 10, 0.95)) !important;
         }
         
         .profile-photo {
@@ -95,102 +145,132 @@
         .admin-badge {
             animation: admin-pulse 2s infinite;
         }
-        @endif
         
-        /* Theme toggle styles */
-        .theme-toggle {
-            margin-right: 10px;
-            cursor: pointer;
-            width: 40px;
-            height: 24px;
-            background-color: var(--accent-dark);
-            border-radius: 12px;
-            position: relative;
+        /* Override blue accent colors with red for admins */
+        .stat-number {
+            background: linear-gradient(135deg, #ff3333, #990000) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+        
+        .feature-icon {
+            background: linear-gradient(135deg, #ff3333, #990000) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+        
+        .admin-stat-number {
+            color: #ff3333 !important;
+            background: linear-gradient(135deg, #ff5555, #cc0000) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+        
+        .admin-control-btn {
+            color: #ff3333 !important;
+        }
+        
+        /* Change blue numbers in the dashboard to red */
+        .dashboard-stat-number,
+        .stat-number {
+            background: linear-gradient(135deg, #ff3333, #990000) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+        
+        /* Target the blue numbers on the user profile page */
+        .container .dashboard-stats,
+        .container .feature-icon,
+        .container [class*="stat-"],
+        .container [class*="number"] {
+            color: #ff3333 !important;
+            background: linear-gradient(135deg, #ff5555, #cc0000) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+        
+        /* Dashboard Styling */
+        .dashboard-card {
+            background: rgba(50, 10, 10, 0.4);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 50, 50, 0.15);
+            padding: 1.25rem;
             transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
         }
         
-        .theme-toggle::after {
-            content: '';
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            background-color: var(--accent-color);
-            transition: all 0.3s ease;
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.15);
+            border: 1px solid rgba(255, 50, 50, 0.3);
         }
         
-        [data-theme="light"] .theme-toggle::after {
-            transform: translateX(16px);
-        }
-        
-        .theme-toggle i {
-            position: absolute;
-            color: var(--text-light);
-            font-size: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        
-        .theme-toggle .fa-sun {
-            right: 4px;
-        }
-        
-        .theme-toggle .fa-moon {
-            left: 4px;
-        }
-        
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: var(--primary-dark);
-            color: var(--text-light);
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        
-        .navbar {
-            background-color: var(--secondary-dark);
-            padding: 0.7rem 2rem;
-            box-shadow: 0 2px 12px var(--shadow-color);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.3s ease, border-bottom 0.3s ease;
-        }
-        
-        .navbar-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .logo {
+        .dashboard-card-title {
+            color: #ff5555;
             font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--text-light);
-            text-decoration: none;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.5rem;
+        }
+        
+        /* Specific styling for user stats cards */
+        .admin-profile-section .stat-number,
+        .dashboard-stat-number,
+        .stat-number,
+        body[class*="dashboard"] .stat-number {
+            font-size: 2.5rem !important;
+            font-weight: 700 !important;
+            background: linear-gradient(135deg, #ff3333, #990000) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            margin-bottom: 0.5rem !important;
+            text-align: center !important;
+        }
+        
+        /* Override specific element styling */
+        #dashboard .container .row .col,
+        .dashboard .container .row .col,
+        body[class*="dashboard"] .container .row .col {
+            margin-bottom: 1rem;
+        }
+        
+        .dashboard-stat-card,
+        .stat-card,
+        .admin-stat-card {
+            background: rgba(40, 10, 10, 0.4) !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 0, 0, 0.15) !important;
+            padding: 1.5rem !important;
+            text-align: center !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .dashboard-stat-card:hover,
+        .stat-card:hover,
+        .admin-stat-card:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.25) !important;
+            border: 1px solid rgba(255, 50, 50, 0.3) !important;
+        }
+        
+        .stat-label,
+        .dashboard-stat-label,
+        .admin-stat-label {
+            color: #ccc !important;
+            font-size: 0.9rem !important;
+            font-weight: 500 !important;
+            text-align: center !important;
         }
         
         .logo span {
-            color: var(--accent-color);
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: color 0.3s ease;
-            font-size: 1.6rem;
+            color: #ff3333 !important;
         }
         
         .logo span strong {
-            color: white;
-            font-weight: 800;
+            color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.4) !important;
         }
         
         .logo:hover span {
@@ -257,8 +337,8 @@
         }
         
         .nav-link.active {
-            color: var(--accent-color);
-            background-color: rgba(26, 159, 255, 0.1);
+            color: #ff5555 !important;
+            background-color: rgba(255, 0, 0, 0.1) !important;
         }
         
         .user-actions {
@@ -587,98 +667,358 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
+        
+        /* Admin Profile Styling */
+        .admin-profile-section {
+            background: linear-gradient(135deg, rgba(80, 10, 10, 0.8), rgba(40, 5, 5, 0.9));
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-profile-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+            z-index: 0;
+        }
+        
+        .admin-profile-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #990000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+            margin-bottom: 1.5rem;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .admin-profile-photo i {
+            font-size: 3rem;
+            color: #666;
+        }
+        
+        .admin-profile-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+            animation: admin-text-glow 3s infinite;
+        }
+        
+        @keyframes admin-text-glow {
+            0% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+            50% { text-shadow: 0 0 20px rgba(255, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.4); }
+            100% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+        }
+        
+        .admin-profile-email {
+            color: #ccc;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(153, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+            position: relative;
+            z-index: 1;
+            animation: admin-pulse 2s infinite;
+        }
+        
+        .admin-badge i {
+            margin-right: 0.5rem;
+        }
+        
+        .admin-stat-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .admin-stat-card {
+            background: rgba(30, 30, 30, 0.6);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 50, 50, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .admin-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 50, 50, 0.3);
+            background: rgba(50, 10, 10, 0.4);
+        }
+        
+        .admin-stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a9fff;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #1a9fff, #0066cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .admin-stat-label {
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+        
+        .admin-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .admin-control-btn {
+            background: rgba(30, 30, 30, 0.6);
+            border: 1px solid rgba(255, 50, 50, 0.2);
+            color: #1a9fff;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .admin-control-btn:hover {
+            background: rgba(50, 10, 10, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(255, 0, 0, 0.15);
+            color: #fff;
+        }
+        
+        /* Theme toggle styles */
+        .theme-toggle {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 40px;
+            height: 24px;
+            background-color: var(--accent-dark);
+            border-radius: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .theme-toggle::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            background-color: var(--accent-color);
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="light"] .theme-toggle::after {
+            transform: translateX(16px);
+        }
+        
+        .theme-toggle i {
+            position: absolute;
+            color: var(--text-light);
+            font-size: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .theme-toggle .fa-sun {
+            right: 4px;
+        }
+        
+        .theme-toggle .fa-moon {
+            left: 4px;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .navbar {
+            background-color: var(--secondary-dark);
+            padding: 0.7rem 2rem;
+            box-shadow: 0 2px 12px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-bottom 0.3s ease;
+        }
+        
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo span {
+            color: #ff3333;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+            font-size: 1.6rem;
+        }
+        
+        .logo span strong {
+            color: white;
+            font-weight: 800;
+        }
+        
+        .nav-link.active {
+            color: #ff5555 !important;
+            background-color: rgba(255, 0, 0, 0.1) !important;
+        }
+        @endif
     </style>
 
     @yield('styles')
 </head>
 <body>
-    <header class="navbar">
-        <div class="navbar-content">
-            <a href="/" class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-gamepad primary"></i>
-                </div>
-                <span>Oyun<strong>Sepetim</strong></span>
-            </a>
-            
-            <nav class="nav-links">
-                <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Ana Sayfa</a>
-                <a href="/games" class="nav-link {{ request()->is('games*') ? 'active' : '' }}">Oyunlar</a>
-                <a href="/deals" class="nav-link {{ request()->is('deals*') ? 'active' : '' }}">Fırsatlar</a>
-                <a href="/wishlist" class="nav-link {{ request()->is('wishlist*') ? 'active' : '' }}"><i class="fas fa-heart"></i> İstek Listesi</a>
-                <a href="/library" class="nav-link {{ request()->is('library*') ? 'active' : '' }}"><i class="fas fa-gamepad"></i> Kütüphanem</a>
-            </nav>
-            
-            <div class="user-actions">
-                @php
-                    $cartCount = session('cart') ? count(session('cart')) : 0;
-                @endphp
-                
-                <a href="/cart" class="cart-icon" title="Sepet">
-                    <i class="fas fa-shopping-cart"></i>
-                    @if($cartCount > 0)
-                        <span class="cart-count">{{ $cartCount }}</span>
-                    @endif
+    <div class="invert-container">
+        <header class="navbar">
+            <div class="navbar-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-gamepad primary"></i>
+                    </div>
+                    <span>Oyun<strong>Sepetim</strong></span>
                 </a>
                 
-                <!-- Theme Toggle Button -->
-                <div class="theme-toggle" id="theme-toggle" title="Tema Değiştir">
-                    <i class="fas fa-moon"></i>
-                    <i class="fas fa-sun"></i>
-                </div>
+                <nav class="nav-links">
+                    <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Ana Sayfa</a>
+                    <a href="/games" class="nav-link {{ request()->is('games*') ? 'active' : '' }}">Oyunlar</a>
+                    <a href="/deals" class="nav-link {{ request()->is('deals*') ? 'active' : '' }}">Fırsatlar</a>
+                    <a href="/wishlist" class="nav-link {{ request()->is('wishlist*') ? 'active' : '' }}"><i class="fas fa-heart"></i> İstek Listesi</a>
+                    <a href="/library" class="nav-link {{ request()->is('library*') ? 'active' : '' }}"><i class="fas fa-gamepad"></i> Kütüphanem</a>
+                </nav>
                 
-                @auth
-                    <div class="user-dropdown">
-                        <div class="dropdown-btn">
-                            <div class="user-avatar">
-                                @if(Auth::user()->photo)
-                                    <img src="{{ asset('images/profiles/' . Auth::user()->photo) }}" alt="{{ Auth::user()->name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                @else
-                                    {{ substr(Auth::user()->name, 0, 1) }}
-                                @endif
+                <div class="user-actions">
+                    @php
+                        $cartCount = session('cart') ? count(session('cart')) : 0;
+                    @endphp
+                    
+                    <a href="/cart" class="cart-icon" title="Sepet">
+                        <i class="fas fa-shopping-cart"></i>
+                        @if($cartCount > 0)
+                            <span class="cart-count">{{ $cartCount }}</span>
+                        @endif
+                    </a>
+                    
+                    @auth
+                        <div class="user-dropdown">
+                            <div class="dropdown-btn">
+                                <div class="user-avatar">
+                                    @if(Auth::user()->photo)
+                                        <img src="{{ asset('images/profiles/' . Auth::user()->photo) }}" alt="{{ Auth::user()->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    @else
+                                        {{ substr(Auth::user()->name, 0, 1) }}
+                                    @endif
+                                </div>
+                                <span class="username-display">{{ Auth::user()->name }}</span>
+                                <i class="fas fa-chevron-down"></i>
                             </div>
-                            <span class="username-display">{{ Auth::user()->name }}</span>
-                            <i class="fas fa-chevron-down"></i>
+                            <div class="dropdown-content">
+                                @if(Auth::user()->is_admin)
+                                    <a href="/admin/panel"><i class="fas fa-cogs mr-2"></i> Panel</a>
+                                @endif
+                                <a href="/dashboard"><i class="fas fa-user"></i> Kullanıcı Paneli</a>
+                                <a href="/orders"><i class="fas fa-history"></i> Satın Alma Geçmişi</a>
+                                <a href="#" id="dropdown-theme-toggle"><i class="fas fa-adjust"></i> <span id="theme-text">Açık Tema</span></a>
+                                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                                </a>
+                                <form id="logout-form" action="/logout" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                            </div>
                         </div>
-                        <div class="dropdown-content">
-                            @if(Auth::user()->is_admin)
-                                <a href="/admin/panel"><i class="fas fa-cogs mr-2"></i> Panel</a>
-                            @endif
-                            <a href="/dashboard"><i class="fas fa-user"></i> Kullanıcı Paneli</a>
-                            <a href="/orders"><i class="fas fa-history"></i> Satın Alma Geçmişi</a>
-                            <a href="#" id="dropdown-theme-toggle"><i class="fas fa-adjust"></i> <span id="theme-text">Açık Tema</span></a>
-                            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt"></i> Çıkış Yap
-                            </a>
-                            <form id="logout-form" action="/logout" method="POST" style="display: none;">
-                                @csrf
-                            </form>
-                        </div>
-                    </div>
-                @else
-                    <a href="/login" class="btn btn-primary login-btn"><i class="fas fa-sign-in-alt"></i> Giriş Yap</a>
-                @endauth
+                    @else
+                        <a href="/login" class="btn btn-primary login-btn"><i class="fas fa-sign-in-alt"></i> Giriş Yap</a>
+                    @endauth
+                </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <main class="container">
-        @yield('content')
-    </main>
+        <main class="container">
+            @yield('content')
+        </main>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <div>
-                <p>&copy; {{ date('Y') }} OyunSepetim. Tüm hakları saklıdır.</p>
+        <footer class="footer">
+            <div class="footer-content">
+                <div>
+                    <p>&copy; {{ date('Y') }} OyunSepetim. Tüm hakları saklıdır.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/about" class="footer-link">Hakkımızda</a>
+                    <a href="/contact" class="footer-link">İletişim</a>
+                    <a href="/privacy" class="footer-link">Gizlilik Politikası</a>
+                    <a href="/terms" class="footer-link">Kullanım Şartları</a>
+                </div>
             </div>
-            <div class="footer-links">
-                <a href="/about" class="footer-link">Hakkımızda</a>
-                <a href="/contact" class="footer-link">İletişim</a>
-                <a href="/privacy" class="footer-link">Gizlilik Politikası</a>
-                <a href="/terms" class="footer-link">Kullanım Şartları</a>
-            </div>
-        </div>
-    </footer>
+        </footer>
+        
+        <!-- Invert Toggle Button -->
+        <button class="invert-toggle" id="invert-toggle" title="Renkleri Tersine Çevir">
+            <i class="fas fa-exchange-alt"></i>
+        </button>
+    </div>
 
     @yield('scripts')
     
@@ -767,6 +1107,30 @@
             
             // Start theme toggle functionality
             setupThemeToggle();
+            
+            // Color inversion functionality
+            function setupInvertToggle() {
+                const invertToggle = document.getElementById('invert-toggle');
+                const invertContainer = document.querySelector('.invert-container');
+                
+                if (!invertToggle || !invertContainer) return;
+                
+                // Check for saved inversion preference
+                const isInverted = localStorage.getItem('inverted') === 'true';
+                if (isInverted) {
+                    invertContainer.classList.add('inverted');
+                }
+                
+                // Handle invert toggle click
+                invertToggle.addEventListener('click', function() {
+                    invertContainer.classList.toggle('inverted');
+                    const newInverted = invertContainer.classList.contains('inverted');
+                    localStorage.setItem('inverted', newInverted);
+                });
+            }
+            
+            // Start invert toggle functionality
+            setupInvertToggle();
         });
     </script>
 </body>

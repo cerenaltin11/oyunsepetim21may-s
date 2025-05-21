@@ -735,6 +735,40 @@
             @endif
         </div>
     </section>
+
+    <section>
+        <h2 class="section-title">
+            Ücretsiz Oyunlar
+            <a href="{{ url('/games?price=0') }}" class="section-title-view-all">Tümünü Gör</a>
+        </h2>
+        <div class="game-grid">
+            @if(isset($freeGames) && count($freeGames) > 0)
+                @foreach($freeGames as $game)
+                <div class="game-card">
+                    <a href="/games/{{ $game->slug }}">
+                        <img src="{{ $game->image }}" alt="{{ $game->title }}" class="game-thumb">
+                        @if(Auth::check() && isset($libraryGames) && in_array($game->id, $libraryGames))
+                            <div class="owned-badge">
+                                <i class="fas fa-check-circle"></i> Sahip
+                            </div>
+                        @endif
+                        <div class="game-info">
+                            @foreach(explode(',', $game->category) as $cat)
+                                <div class="category-tag">{{ trim($cat) }}</div>
+                            @endforeach
+                            <h3 class="game-title">{{ $game->title }}</h3>
+                            <div class="game-price">
+                                <span class="price">Ücretsiz</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            @else
+                <div class="alert alert-info w-100">Ücretsiz oyunlar bulunamadı.</div>
+            @endif
+        </div>
+    </section>
 @endsection
 
 @section('scripts')

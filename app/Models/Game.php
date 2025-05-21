@@ -36,6 +36,24 @@ class Game extends Model
     }
     
     /**
+     * Get the users who own this game.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_games', 'game_id', 'user_id')
+            ->withPivot('purchased_at', 'play_time')
+            ->withTimestamps();
+    }
+    
+    /**
+     * Get the user game ownership records.
+     */
+    public function userGames()
+    {
+        return $this->hasMany(UserGame::class);
+    }
+    
+    /**
      * Get the average rating for the game.
      */
     public function getAverageRatingAttribute()
@@ -49,5 +67,21 @@ class Game extends Model
     public function getReviewCountAttribute()
     {
         return $this->reviews()->where('is_approved', true)->count();
+    }
+    
+    /**
+     * Get the owner count for the game.
+     */
+    public function getOwnerCountAttribute()
+    {
+        return $this->userGames()->count();
+    }
+    
+    /**
+     * Check if the game is free.
+     */
+    public function getIsFreeAttribute()
+    {
+        return $this->price == 0;
     }
 } 

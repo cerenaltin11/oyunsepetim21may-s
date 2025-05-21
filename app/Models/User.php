@@ -28,6 +28,8 @@ class User extends Authenticatable
         'previous_login_at',
         'login_count',
         'consecutive_days',
+        'level',
+        'xp',
     ];
 
     /**
@@ -133,5 +135,114 @@ class User extends Authenticatable
         $this->save();
         
         return $this;
+    }
+
+    // Steam mantığına benzer level hesaplama
+    public function getLevelAttribute()
+    {
+        // Her level için gereken XP: 100 * level
+        // 0-99 XP: Level 1, 100-199 XP: Level 2, 200-299 XP: Level 3, ...
+        return floor($this->xp / 100) + 1;
+    }
+
+    public function library()
+    {
+        return $this->belongsToMany(Game::class, 'user_games', 'user_id', 'game_id')->withTimestamps()->withPivot('purchased_at');
+    }
+
+    /**
+     * Get all friends of the user (accepted friendships)
+     */
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+            ->wherePivot('status', 'accepted')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get pending friend requests sent by the user
+     */
+    public function pendingSentFriendRequests()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+            ->wherePivot('status', 'pending')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get pending friend requests received by the user
+     */
+    public function pendingReceivedFriendRequests()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'friend_id', 'user_id')
+            ->wherePivot('status', 'pending')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get blocked users by the user
+     */
+    public function blockedUsers()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+            ->wherePivot('status', 'blocked')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the games owned by the user.
+     */
+    public function games()
+    {
+        return $this->belongsToMany(Game::class, 'user_games', 'user_id', 'game_id')
+            ->withPivot('purchased_at', 'play_time')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the user's game ownership records.
+     */
+    public function userGames()
+    {
+        return $this->hasMany(UserGame::class);
+    }
+
+    /**
+     * Check if the user owns a specific game.
+     */
+    public function ownsGame($gameId)
+    {
+        return $this->userGames()->where('game_id', $gameId)->exists();
+    }
+
+    // Oyun satın alma rozetlerini kontrol et
+    public function checkPurchaseBadges()
+    {
+        $purchaseCount = $this->games()->count();
+        $this->awardBadgeIfEligible('first_purchase', $purchaseCount, 1);
+        $this->awardBadgeIfEligible('five_purchases', $purchaseCount, 5);
+        $this->awardBadgeIfEligible('ten_purchases', $purchaseCount, 10);
+        $this->awardBadgeIfEligible('ten_games_in_library', $purchaseCount, 10);
+    }
+
+    // İnceleme rozetlerini kontrol et
+    public function checkReviewBadges()
+    {
+        $reviewCount = $this->reviews()->count();
+        $this->awardBadgeIfEligible('first_review', $reviewCount, 1);
+        $this->awardBadgeIfEligible('five_reviews', $reviewCount, 5);
+    }
+
+    // Genel amaçlı rozet verme fonksiyonu
+    private function awardBadgeIfEligible($badgeName, $userCount, $requiredCount)
+    {
+        $badge = \App\Models\Badge::where('name', $badgeName)->first();
+        if ($badge && $userCount >= $requiredCount && !$this->hasBadge($badge->id)) {
+            $this->badges()->attach($badge->id, [
+                'awarded_at' => now(),
+                'is_displayed' => true
+            ]);
+        }
     }
 }

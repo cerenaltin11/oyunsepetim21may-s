@@ -173,6 +173,39 @@ class PaymentController extends Controller
         \Log::info('Payment processed successfully. Order ID: ' . $orderId);
         \Log::info('Items purchased: ', $items);
         
+        // Add purchased games to user's library
+        $gameIds = [];
+        foreach ($orderDetails['items'] as $item) {
+            $gameIds[] = $item['id'];
+        }
+
+        // Kullanıcıya oyunları veritabanındaki user_games tablosuna ekle
+        $user = auth()->user();
+        if ($user) {
+            foreach ($gameIds as $gameId) {
+                // Check if user already owns this game
+                $exists = \App\Models\UserGame::where('user_id', $user->id)
+                    ->where('game_id', $gameId)
+                    ->exists();
+                    
+                if (!$exists) {
+                    \App\Models\UserGame::create([
+                        'user_id' => $user->id,
+                        'game_id' => $gameId,
+                        'purchased_at' => now()
+                    ]);
+                }
+            }
+            
+            // Rozet kontrolü
+            if (method_exists($user, 'checkPurchaseBadges')) {
+                $user->checkPurchaseBadges();
+            }
+        }
+
+        // Use the library controller to handle any additional logic
+        app(\App\Http\Controllers\LibraryController::class)->addGames($gameIds);
+        
         return redirect()->route('payment.success', ['orderId' => $orderId]);
     }
     
@@ -191,14 +224,6 @@ class PaymentController extends Controller
         if (!$orderDetails) {
             return redirect('/')->with('error', 'Sipariş detayları bulunamadı.');
         }
-        
-        // Add purchased games to user's library
-        $gameIds = [];
-        foreach ($orderDetails['items'] as $item) {
-            $gameIds[] = $item['id'];
-        }
-        
-        app(\App\Http\Controllers\LibraryController::class)->addGames($gameIds);
         
         // Clear the cart after successful purchase
         session()->forget('cart');

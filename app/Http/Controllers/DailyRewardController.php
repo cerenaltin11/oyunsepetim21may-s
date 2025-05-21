@@ -24,6 +24,16 @@ class DailyRewardController extends Controller
         
         $user = Auth::user();
         
+        // Eğer kullanıcı bugün zaten ödülünü aldıysa ve bu session'da kaydedildiyse
+        if (session()->has('daily_reward_claimed_' . $user->id)) {
+            return response()->json([
+                'reward_available' => false,
+                'debug' => [
+                    'reason' => 'already_claimed_in_session'
+                ]
+            ]);
+        }
+        
         // Debug bilgileri ekleyelim
         $now = now();
         $lastLogin = $user->last_login_at;
@@ -115,6 +125,9 @@ class DailyRewardController extends Controller
         }
         
         $user->save();
+        
+        // Ödül alındığını session'a kaydet
+        session(['daily_reward_claimed_' . $user->id => true]);
         
         // Check for login badges
         $this->checkForLoginBadges($user);

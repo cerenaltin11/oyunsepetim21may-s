@@ -776,7 +776,13 @@
                 @endif
             </div>
             <div class="profile-info">
-                <h1>Hoş Geldiniz, {{ Auth::user()->name }}</h1>
+                <h1>Hoş Geldiniz, {{ Auth::user()->name }}
+                    <span class="badge badge-primary" style="margin-left: 10px; font-size: 1rem; vertical-align: middle;">Level {{ Auth::user()->level }}</span>
+                    <span title="Level Rozeti" style="vertical-align: middle; margin-left: 5px;">
+                        <i class="fas fa-medal" style="color: gold;"></i>
+                    </span>
+                    <span style="margin-left: 10px; font-size: 0.9rem; color: #aaa;">({{ Auth::user()->xp }} XP)</span>
+                </h1>
                 <p>{{ Auth::user()->email }}</p>
                 @if(Auth::user()->is_admin)
                 <div style="margin-top: 5px; color: #ff3333;">
@@ -826,12 +832,16 @@
                     <div class="stat-label">Gündür Üyesiniz</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">2</div>
+                    <div class="stat-number">{{ Auth::user()->userGames()->count() }}</div>
                     <div class="stat-label">Oyun Satın Aldınız</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">{{ count(Session::get('wishlist', [])) }}</div>
                     <div class="stat-label">İstek Listenizde</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ Auth::user()->friends()->count() }}</div>
+                    <div class="stat-label">Arkadaşınız Var</div>
                 </div>
             </div>
             
@@ -875,6 +885,16 @@
                         <h3>Sepetim</h3>
                         <p>Sepetinizdeki oyunları görüntüleyin.</p>
                 </div>
+                </a>
+
+                <a href="/friends">
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Arkadaşlarım</h3>
+                        <p>Arkadaşlarınızı görüntüleyin ve yeni arkadaşlar ekleyin.</p>
+                    </div>
                 </a>
         </div>
         

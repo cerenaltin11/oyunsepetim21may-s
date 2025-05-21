@@ -91,11 +91,54 @@ class BadgeSeeder extends Seeder
                 'icon' => 'fa-shield-alt',
                 'type' => 'achievement',
                 'required_count' => 1,
-            ]
+            ],
+            [
+                'name' => 'five_purchases',
+                'description' => '5 Oyun Satın Alma Rozeti',
+                'icon' => 'fa-shopping-basket',
+                'type' => 'purchase',
+                'required_count' => 5,
+            ],
+            [
+                'name' => 'ten_purchases',
+                'description' => '10 Oyun Satın Alma Rozeti',
+                'icon' => 'fa-store',
+                'type' => 'purchase',
+                'required_count' => 10,
+            ],
+            [
+                'name' => 'first_review',
+                'description' => 'İlk İnceleme Rozeti',
+                'icon' => 'fa-pen',
+                'type' => 'review',
+                'required_count' => 1,
+            ],
+            [
+                'name' => 'five_reviews',
+                'description' => '5 İnceleme Rozeti',
+                'icon' => 'fa-pencil-alt',
+                'type' => 'review',
+                'required_count' => 5,
+            ],
+            [
+                'name' => 'ten_games_in_library',
+                'description' => 'Kütüphanede 10 Oyun Rozeti',
+                'icon' => 'fa-gamepad',
+                'type' => 'library',
+                'required_count' => 10,
+            ],
         ];
 
         foreach ($badges as $badge) {
-            Badge::create($badge);
+            Badge::updateOrCreate(
+                ['name' => $badge['name']],
+                [
+                    'description' => $badge['description'],
+                    'icon' => $badge['icon'],
+                    'type' => $badge['type'],
+                    'required_count' => $badge['required_count']
+                ]
+            );
         }
     }
 } 

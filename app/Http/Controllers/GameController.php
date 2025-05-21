@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Game;
+use App\Models\UserGame;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Review;
 
 class GameController extends Controller
 {
@@ -72,7 +74,8 @@ class GameController extends Controller
         // Kullanıcının kütüphanesindeki oyunları al
         $libraryGames = [];
         if (Auth::check()) {
-            $libraryGames = Session::get('library', []);
+            $userGames = UserGame::where('user_id', Auth::id())->pluck('game_id')->toArray();
+            $libraryGames = $userGames;
         }
         
         return view('games.index', compact('games', 'search', 'category', 'sort', 'direction', 'uniqueCategories', 'libraryGames'));
@@ -91,11 +94,18 @@ class GameController extends Controller
         // Kullanıcının oyunu zaten sahip olup olmadığını kontrol et
         $hasGame = false;
         if (Auth::check()) {
-            $library = Session::get('library', []);
-            $hasGame = in_array($game->id, $library);
+            $hasGame = UserGame::where('user_id', Auth::id())
+                ->where('game_id', $game->id)
+                ->exists();
         }
         
-        return view('games.detail', compact('game', 'hasGame'));
+        // Oyuna ait incelemeleri çek
+        $reviews = Review::where('game_id', $game->id)
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return view('games.detail', compact('game', 'hasGame', 'reviews'));
     }
     
     /**

@@ -55,6 +55,9 @@ class HomeController extends Controller
             // Get strategy games
             $strategyGames = Game::where('category', 'LIKE', '%Strateji%')->take(5)->get();
             
+            // Get free games
+            $freeGames = Game::where('price', 0)->take(6)->get();
+            
             // Get user's library games if user is logged in
             $libraryGames = [];
             if (Auth::check()) {
@@ -68,7 +71,8 @@ class HomeController extends Controller
                 'RPG: ' . $rpgGames->count() . ', ' .
                 'Sport: ' . $sportGames->count() . ', ' .
                 'Horror: ' . $horrorGames->count() . ', ' .
-                'Strategy: ' . $strategyGames->count()
+                'Strategy: ' . $strategyGames->count() . ', ' .
+                'Free: ' . $freeGames->count()
             );
             
             return view('home', [
@@ -78,6 +82,7 @@ class HomeController extends Controller
                 'sportGames' => $sportGames,
                 'horrorGames' => $horrorGames,
                 'strategyGames' => $strategyGames,
+                'freeGames' => $freeGames,
                 'libraryGames' => $libraryGames
             ]);
         } catch (\Exception $e) {

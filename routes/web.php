@@ -12,6 +12,9 @@ use App\Http\Controllers\AdminController;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\FriendController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,10 +28,7 @@ use Illuminate\Support\Facades\Schema;
 */
 
 // Ana sayfa
-Route::get('/', function() {
-    // Temporarily use only the static template
-    return view('temp-home');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // About page
 Route::get('/about', function() {
@@ -99,31 +99,12 @@ Route::get('/library-test', function () {
 })->name('library.test');
 
 // Replace the library route with a direct route definition
-Route::get('/library', function() {
-    // If not logged in, redirect to login
-    if (!auth()->check()) {
-        return redirect()->route('login')->with('error', 'Kütüphanenize erişmek için giriş yapmalısınız.');
-    }
-    
-    // Get library games from session
-    $libraryGames = session('library', []);
-    $libraryItems = [];
-    
-    // Find game details for each ID
-    if (!empty($libraryGames)) {
-        foreach ($libraryGames as $gameId) {
-            $game = \App\Models\Game::find($gameId);
-            if ($game) {
-                $libraryItems[] = $game;
-            }
-        }
-    }
-    
-    return view('library', [
-        'libraryItems' => $libraryItems,
-        'totalCount' => count($libraryItems)
-    ]);
-})->name('library');
+Route::get('/library', [\App\Http\Controllers\LibraryController::class, 'index'])->name('library');
+
+// Library routes
+Route::get('/library/download/{gameId}', [\App\Http\Controllers\LibraryController::class, 'download'])->name('library.download');
+Route::post('/library/add-direct', [\App\Http\Controllers\LibraryController::class, 'addDirect'])->name('library.add_direct');
+Route::get('/library/game/{gameId}', [\App\Http\Controllers\LibraryController::class, 'gameDetail'])->name('library.game');
 
 // Sepet işlemleri - Sadece giriş yapmış kullanıcılar için
 Route::middleware(['auth'])->group(function() {
@@ -146,8 +127,9 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/payment/process', [\App\Http\Controllers\PaymentController::class, 'process'])->name('payment.process');
     Route::get('/payment/success/{orderId}', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
     
-    // Library download route
+    // Library routes
     Route::get('/library/download/{gameId}', [\App\Http\Controllers\LibraryController::class, 'download'])->name('library.download');
+    Route::post('/library/add-direct', [\App\Http\Controllers\LibraryController::class, 'addDirect'])->name('library.add_direct');
 });
 
 // Giriş ve kayıt rotaları
@@ -301,6 +283,7 @@ Route::post('/reviews', [\App\Http\Controllers\ReviewController::class, 'store']
 Route::put('/reviews/{id}', [\App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update')->middleware('auth');
 Route::delete('/reviews/{id}', [\App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy')->middleware('auth');
 Route::post('/reviews/{id}/helpful', [\App\Http\Controllers\ReviewController::class, 'markHelpful'])->name('reviews.helpful')->middleware('auth');
+Route::get('/reviews/create/{game_id}', [\App\Http\Controllers\ReviewController::class, 'create'])->name('reviews.create')->middleware('auth');
 
 // Admin routes - only accessible to admin users
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
@@ -441,4 +424,27 @@ Route::get('/toggle-admin', function() {
     } else {
         return "Admin status disabled. <a href='/profile/badges'>View your badges</a>";
     }
+});
+
+// Community routes
+Route::prefix('community')->name('community.')->group(function () {
+    Route::get('/', [CommunityController::class, 'index'])->name('index');
+    Route::get('/create', [CommunityController::class, 'create'])->name('create')->middleware('auth');
+    Route::post('/store', [CommunityController::class, 'store'])->name('store')->middleware('auth');
+    Route::get('/{post}', [CommunityController::class, 'show'])->name('show');
+    Route::post('/{post}/comment', [CommunityController::class, 'comment'])->name('comment')->middleware('auth');
+    Route::post('/like/{type}/{id}', [CommunityController::class, 'like'])->name('like')->middleware('auth');
+    Route::get('/game/{game}', [CommunityController::class, 'gameCommunity'])->name('game');
+});
+
+// Friend routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/friends', [FriendController::class, 'index'])->name('friends.index');
+    Route::post('/friends/request/{user}', [FriendController::class, 'sendRequest'])->name('friends.request');
+    Route::post('/friends/accept/{user}', [FriendController::class, 'acceptRequest'])->name('friends.accept');
+    Route::post('/friends/reject/{user}', [FriendController::class, 'rejectRequest'])->name('friends.reject');
+    Route::delete('/friends/remove/{user}', [FriendController::class, 'removeFriend'])->name('friends.remove');
+    Route::post('/friends/block/{user}', [FriendController::class, 'blockUser'])->name('friends.block');
+    Route::post('/friends/unblock/{user}', [FriendController::class, 'unblockUser'])->name('friends.unblock');
+    Route::get('/friends/search', [FriendController::class, 'search'])->name('friends.search');
 });

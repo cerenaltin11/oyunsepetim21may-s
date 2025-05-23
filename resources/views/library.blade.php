@@ -782,7 +782,7 @@ use Illuminate\Support\Facades\Auth;
                                     <div class="game-info" style="padding: 10px;">
                                         <div class="game-title" style="font-weight: 600; margin-bottom: 5px;">{{ $game->title }}</div>
                                         <div class="price-tag" style="color: #00cc44; font-weight: bold; margin-bottom: 10px;">Ücretsiz</div>
-                                        <form action="{{ route('library.add.direct') }}" method="POST" style="text-align: center;">
+                                        <form action="{{ route('library.add_direct') }}" method="POST" style="text-align: center;">
                                             @csrf
                                             <input type="hidden" name="game_id" value="{{ $game->id }}">
                                             <button type="submit" style="background: var(--accent-color); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; width: 100%;">

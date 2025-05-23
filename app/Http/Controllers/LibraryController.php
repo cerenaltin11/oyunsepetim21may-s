@@ -64,23 +64,23 @@ class LibraryController extends Controller
         }
 
         try {
-            // Get user's games from database
+        // Get user's games from database
             $userGames = UserGame::where('user_id', $userId)->with('game')->get();
             
-            $libraryItems = $userGames->map(function($userGame) {
-                return $userGame->game;
-            })->filter(); // Filter out any null values
+        $libraryItems = $userGames->map(function($userGame) {
+            return $userGame->game;
+        })->filter(); // Filter out any null values
             
             // Get free games
             $freeGames = Game::where('price', 0)->whereDoesntHave('users', function($query) use ($userId) {
                 $query->where('user_id', $userId);
             })->get();
-            
-            return view('library', [
-                'libraryItems' => $libraryItems,
+        
+        return view('library', [
+            'libraryItems' => $libraryItems,
                 'freeGames' => $freeGames,
-                'totalCount' => $libraryItems->count()
-            ]);
+            'totalCount' => $libraryItems->count()
+        ]);
         } catch (\Exception $e) {
             \Log::error('Library load error: ' . $e->getMessage());
             return redirect()->route('home')
@@ -159,15 +159,15 @@ class LibraryController extends Controller
         }
         
         try {
-            // Add game to library
-            UserGame::create([
-                'user_id' => Auth::id(),
-                'game_id' => $gameId,
-                'purchased_at' => now()
-            ]);
-            
-            return redirect()->route('library')
-                ->with('success', $game->title . ' kütüphanenize eklendi! Hemen oynamaya başlayabilirsiniz.');
+        // Add game to library
+        UserGame::create([
+            'user_id' => Auth::id(),
+            'game_id' => $gameId,
+            'purchased_at' => now()
+        ]);
+        
+        return redirect()->route('library')
+            ->with('success', $game->title . ' kütüphanenize eklendi! Hemen oynamaya başlayabilirsiniz.');
         } catch (\Exception $e) {
             // Log the error
             \Log::error('Game add error: ' . $e->getMessage());

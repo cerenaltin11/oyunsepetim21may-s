@@ -87,10 +87,17 @@
         width: 300px;
     }
 
+    /* Search form styling */
+    .search-form {
+        display: flex;
+        width: 100%;
+        position: relative;
+    }
+
     .search-input {
         width: 100%;
         padding: 12px 16px;
-        padding-right: 40px;
+        padding-right: 50px;
         background: var(--accent-dark);
         border: 1px solid var(--border-color);
         border-radius: 8px;
@@ -105,13 +112,30 @@
         box-shadow: 0 0 0 2px rgba(26, 159, 255, 0.2);
     }
 
-    .search-icon {
+    /* Style for the search button */
+    .search-button {
         position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
+        right: 0;
+        top: 0;
+        height: 100%;
+        background: transparent;
+        border: none;
         color: var(--text-gray);
-        pointer-events: none;
+        padding: 0 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .search-button:hover {
+        color: var(--accent-color);
+    }
+    
+    .search-button:focus {
+        outline: none;
+    }
+    
+    .search-button i {
+        font-size: 16px;
     }
 
     .friends-tabs {
@@ -369,6 +393,105 @@
         max-width: 400px;
         margin: 0 auto;
     }
+    
+    /* Notification animations */
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    
+    /* Notification styling */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+        z-index: 9999;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 300px;
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    .notification.success {
+        background-color: rgba(46, 204, 113, 0.9);
+    }
+    
+    .notification.error {
+        background-color: rgba(231, 76, 60, 0.9);
+    }
+    
+    .notification.info {
+        background-color: rgba(52, 152, 219, 0.9);
+    }
+    
+    @keyframes slideIn {
+        0% {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
+    
+    /* Loading indicator */
+    .search-loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    
+    .search-loading .spinner {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 3px solid rgba(26, 159, 255, 0.3);
+        border-top-color: var(--accent-color);
+        animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 
     @media (max-width: 768px) {
         .friends-header {
@@ -432,9 +555,14 @@ window.activateTab = function(tabId) {
     <div class="friends-header">
         <h1 class="friends-title">Arkadaşlarım</h1>
         <div class="search-container">
-            <input type="text" class="search-input" placeholder="Arkadaş ara..." id="friendSearch">
-            <i class="fas fa-search search-icon"></i>
-            <div class="search-results" id="searchResults"></div>
+            <!-- Enhanced search form -->
+            <div class="search-form">
+                <input type="text" class="search-input" placeholder="Arkadaş ara..." id="friendSearchInput" autocomplete="off">
+                <button type="button" class="search-button" id="friendSearchButton">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="search-results" id="friendSearchResults" style="max-height: 400px; overflow-y: auto;"></div>
         </div>
     </div>
 
@@ -451,7 +579,7 @@ window.activateTab = function(tabId) {
         <div class="friends-grid">
             @foreach($friends as $friend)
             <div class="friend-card">
-                <div class="friend-header">
+                <div class="friend-header" onclick="window.location.href='/profile/{{ $friend->id }}'" style="cursor: pointer;">
                     @if($friend->photo)
                     <img src="{{ asset('storage/' . $friend->photo) }}" alt="{{ $friend->name }}" class="friend-avatar">
                     @else
@@ -484,11 +612,11 @@ window.activateTab = function(tabId) {
                 </div>
 
                 <div class="friend-actions">
-                    <button class="friend-action-btn" onclick="window.location.href='/messages/{{ $friend->id }}'">
+                    <a href="/messages/{{ $friend->id }}" class="friend-action-btn">
                         <i class="fas fa-comment"></i>
                         Mesaj
-                    </button>
-                    <button class="friend-action-btn">
+                    </a>
+                    <button class="friend-action-btn" onclick="window.location.href='/games/invite/{{ $friend->id }}'">
                         <i class="fas fa-gamepad"></i>
                         Oyuna Davet Et
                     </button>
@@ -609,72 +737,297 @@ window.activateTab = function(tabId) {
     </div>
 </div>
 
-@push('scripts')
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Friend search functionality
-    const searchInput = document.getElementById('friendSearch');
-    const searchResults = document.getElementById('searchResults');
-    let searchTimeout;
+    console.log('🚀 Arkadaş arama sistemi başlatılıyor...');
     
-    searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
+    // Get our elements
+    const searchInput = document.getElementById('friendSearchInput');
+    const searchButton = document.getElementById('friendSearchButton');
+    const searchResults = document.getElementById('friendSearchResults');
+    
+    if (!searchInput || !searchButton || !searchResults) {
+        console.error('❌ Arama elementleri bulunamadı!');
+        return;
+    }
+    
+    console.log('✅ Arama elementleri bulundu');
+    
+    // Enhanced search function
+    function doSearch() {
         const query = searchInput.value.trim();
+        console.log('🔍 Arama başlatıldı:', query);
         
         if (query.length < 2) {
-            searchResults.classList.remove('active');
+            searchResults.innerHTML = '<div style="padding: 15px; text-align: center; color: #e67e22;">Lütfen en az 2 karakter girin</div>';
+            searchResults.style.display = 'block';
             return;
         }
         
-        searchTimeout = setTimeout(() => {
-            fetch(`/friends/search?query=${encodeURIComponent(query)}`)
-                .then(response => response.json())
-                .then(users => {
-                    searchResults.innerHTML = '';
+        // Show loading
+        searchResults.innerHTML = '<div style="padding: 20px; text-align: center;"><i class="fas fa-spinner fa-spin"></i> Aranıyor...</div>';
+        searchResults.style.display = 'block';
+        
+        fetch('/friends/search?query=' + encodeURIComponent(query))
+            .then(response => {
+                console.log('📡 Response alındı:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('📊 Arama sonuçları:', data);
+                renderSearchResults(data);
+            })
+            .catch(error => {
+                console.error('❌ Arama hatası:', error);
+                searchResults.innerHTML = `<div style="padding: 20px; text-align: center; color: #e74c3c;">Arama hatası: ${error.message}</div>`;
+            });
+    }
+    
+    // Render search results
+    function renderSearchResults(data) {
+        let html = '';
+        
+        if (data.users && data.users.length > 0) {
+            data.users.forEach(user => {
+                const avatar = user.photo 
+                    ? `<img src="/storage/${user.photo}" alt="${user.name}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">` 
+                    : `<div style="width: 48px; height: 48px; border-radius: 50%; background: #1a9fff; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">${user.name.charAt(0).toUpperCase()}</div>`;
                     
-                    if (users.length === 0) {
-                        searchResults.innerHTML = `
-                            <div class="search-result-item">
-                                <div class="search-info">
-                                    <p>Kullanıcı bulunamadı</p>
-                                </div>
+                html += `
+                    <div style="padding: 15px; border-bottom: 1px solid #333; display: flex; align-items: center; background: #2a2a2a; margin: 5px 0;">
+                        <div onclick="window.location.href='/profile/${user.id}'" style="cursor: pointer; display: flex; align-items: center; flex-grow: 1;">
+                            <div style="margin-right: 15px;">${avatar}</div>
+                            <div>
+                                <div style="font-weight: bold; color: #fff; font-size: 16px;">${user.name}</div>
+                                <div style="color: #aaa; font-size: 13px;">Kullanıcı ID: ${user.id}</div>
                             </div>
-                        `;
-                    } else {
-                        users.forEach(user => {
-                            const item = document.createElement('div');
-                            item.className = 'search-result-item';
-                            item.innerHTML = `
-                                <img src="${user.photo ? '/storage/' + user.photo : '/images/default-avatar.png'}" 
-                                     alt="${user.name}" 
-                                     class="search-avatar">
-                                <div class="search-info">
-                                    <h4>${user.name}</h4>
-                                    <p>Seviye ${user.level}</p>
-                                </div>
-                                <form action="/friends/request/${user.id}" method="POST" style="margin-left: auto;">
-                                    @csrf
-                                    <button type="submit" class="friend-action-btn">
-                                        <i class="fas fa-user-plus"></i>
-                                    </button>
-                                </form>
-                            `;
-                            searchResults.appendChild(item);
-                        });
-                    }
+                        </div>
+                        <button onclick="sendFriendRequest(${user.id}, this)" style="padding: 8px 12px; background: #1a9fff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-user-plus"></i> Ekle
+                        </button>
+                    </div>
+                `;
+            });
+        } else {
+            html = '<div style="padding: 20px; text-align: center; color: #aaa;">Kullanıcı bulunamadı</div>';
+        }
+        
+        // Add excluded users if any
+        if (data.excluded_info && data.excluded_info.length > 0) {
+            html += `
+                <div style="margin-top: 15px; padding: 15px; background: rgba(30, 30, 30, 0.7); border-radius: 8px;">
+                    <h4 style="margin: 0 0 10px; color: #aaa;">Bulunan diğer kullanıcılar:</h4>
+            `;
+            
+            data.excluded_info.forEach(info => {
+                const avatar = info.user.photo 
+                    ? `<img src="/storage/${info.user.photo}" alt="${info.user.name}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">` 
+                    : `<div style="width: 36px; height: 36px; border-radius: 50%; background: #1a9fff; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${info.user.name.charAt(0).toUpperCase()}</div>`;
+                
+                let actionButton = '';
+                if (info.reason === 'sent_request') {
+                    actionButton = '<span style="color: #2980b9; font-size: 12px;">✉️ Gönderildi</span>';
+                } else if (info.reason === 'received_request') {
+                    actionButton = '<span style="color: #27ae60; font-size: 12px;">📥 Size istek gönderdi</span>';
+                } else if (info.reason === 'friend') {
+                    actionButton = '<span style="color: #2ecc71; font-size: 12px;">✅ Arkadaş</span>';
+                }
+                
+                html += `
+                    <div style="margin-bottom: 10px; padding: 10px; display: flex; align-items: center; border-radius: 6px; background: rgba(40, 40, 40, 0.4);">
+                        <div onclick="window.location.href='/profile/${info.user.id}'" style="cursor: pointer; display: flex; align-items: center; flex-grow: 1;">
+                            <div style="margin-right: 10px;">${avatar}</div>
+                            <div>
+                                <span style="font-weight: bold; color: #ddd;">${info.user.name}</span>
+                                <span style="display: block; font-size: 12px; color: #e67e22;">${info.message}</span>
+                            </div>
+                        </div>
+                        ${actionButton}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+        }
+        
+        searchResults.innerHTML = html;
+        console.log('✅ Sonuçlar görüntülendi');
+    }
+    
+    // Friend request function
+    window.sendFriendRequest = function(userId, button) {
+        console.log('📤 Arkadaşlık isteği gönderiliyor:', userId);
+        
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gönderiliyor...';
+        
+        // Get CSRF token
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        const token = csrfMeta ? csrfMeta.getAttribute('content') : document.querySelector('input[name="_token"]').value;
+        
+        const formData = new FormData();
+        formData.append('_token', token);
+        
+        fetch('/friends/request/' + userId, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            console.log('📡 Response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+            }
+            
+            return response.text();
+        })
+        .then(text => {
+            console.log('📋 Raw response:', text);
+            
+            try {
+                const data = JSON.parse(text);
+                console.log('✅ JSON parse başarılı:', data);
+                
+                if (data.status === 'success') {
+                    button.innerHTML = '<i class="fas fa-check"></i> Gönderildi';
+                    button.style.background = '#2ecc71';
                     
-                    searchResults.classList.add('active');
-                });
-        }, 300);
+                    // Show success notification
+                    showNotification('✅ Arkadaşlık isteği gönderildi!', 'success');
+                    
+                    // Refresh search after 2 seconds
+                    setTimeout(() => doSearch(), 2000);
+                } else {
+                    throw new Error(data.message || 'Bilinmeyen hata');
+                }
+            } catch (parseError) {
+                console.error('❌ JSON parse hatası:', parseError);
+                console.log('📄 Response HTML olarak alındı:', text.substring(0, 200));
+                
+                button.innerHTML = '<i class="fas fa-times"></i> Hata';
+                button.style.background = '#e74c3c';
+                
+                showNotification('❌ Sunucu hatası (JSON beklendi, HTML alındı)', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Network hatası:', error);
+            button.innerHTML = '<i class="fas fa-times"></i> Hata';
+            button.style.background = '#e74c3c';
+            
+            showNotification('❌ Ağ hatası: ' + error.message, 'error');
+            
+            // Re-enable button after 3 seconds
+            setTimeout(() => {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-user-plus"></i> Ekle';
+                button.style.background = '#1a9fff';
+            }, 3000);
+        });
+    };
+    
+    // Notification function
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#2ecc71' : type === 'error' ? '#e74c3c' : '#3498db'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        `;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 4000);
+    }
+    
+    // Event listeners
+    searchButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('🔍 Search button clicked');
+        doSearch();
     });
     
-    // Close search results when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-            searchResults.classList.remove('active');
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            console.log('⌨️ Enter key pressed');
+            doSearch();
         }
     });
+    
+    // Auto search as user types (with delay)
+    let typingTimer;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(typingTimer);
+        
+        const query = this.value.trim();
+        if (query.length >= 2) {
+            typingTimer = setTimeout(() => doSearch(), 500);
+        } else if (query.length === 0) {
+            searchResults.style.display = 'none';
+        }
+    });
+    
+    // Close results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!document.querySelector('.search-container').contains(e.target)) {
+            searchResults.style.display = 'none';
+        }
+    });
+    
+    // Tab switching functionality
+    window.activateTab = function(tabId) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.style.display = 'none';
+        });
+        
+        // Show selected tab
+        const selectedTab = document.getElementById(tabId + 'Tab');
+        if (selectedTab) {
+            selectedTab.style.display = 'block';
+        }
+        
+        // Update active tab link
+        document.querySelectorAll('.tab-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        const activeLink = document.getElementById(tabId + 'Link');
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+    };
+    
+    // Initialize friends tab
+    window.activateTab('friends');
+    
+    console.log('🎉 Arkadaş arama sistemi başarıyla yüklendi!');
 });
 </script>
-@endpush
 @endsection 

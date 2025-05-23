@@ -249,6 +249,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile/photo/delete', [\App\Http\Controllers\ProfileController::class, 'deletePhoto'])->name('profile.photo.delete');
     Route::get('/profile/banner/delete', [\App\Http\Controllers\ProfileController::class, 'deleteBanner'])->name('profile.banner.delete');
     
+    // View another user's profile
+    Route::get('/profile/{userId}', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+    
     Route::get('/orders', function () {
         return view('orders');
     })->name('orders');
@@ -440,11 +443,13 @@ Route::prefix('community')->name('community.')->group(function () {
 // Friend routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/friends', [FriendController::class, 'index'])->name('friends.index');
+    Route::get('/friends/search', [FriendController::class, 'search'])->name('friends.search');
     Route::post('/friends/request/{user}', [FriendController::class, 'sendRequest'])->name('friends.request');
     Route::post('/friends/accept/{user}', [FriendController::class, 'acceptRequest'])->name('friends.accept');
     Route::post('/friends/reject/{user}', [FriendController::class, 'rejectRequest'])->name('friends.reject');
     Route::delete('/friends/remove/{user}', [FriendController::class, 'removeFriend'])->name('friends.remove');
     Route::post('/friends/block/{user}', [FriendController::class, 'blockUser'])->name('friends.block');
     Route::post('/friends/unblock/{user}', [FriendController::class, 'unblockUser'])->name('friends.unblock');
-    Route::get('/friends/search', [FriendController::class, 'search'])->name('friends.search');
 });
+
+// End of routes file

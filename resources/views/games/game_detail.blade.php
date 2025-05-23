@@ -1303,4 +1303,4 @@ use Illuminate\Support\Facades\Auth;
         }
     });
 </script>
-@endsection
+@endsection 

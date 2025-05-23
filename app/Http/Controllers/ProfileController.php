@@ -23,6 +23,57 @@ class ProfileController extends Controller
         return view('profile');
     }
     
+    /**
+     * Show a user's profile
+     */
+    public function show($userId)
+    {
+        $user = \App\Models\User::findOrFail($userId);
+        $isFriend = false;
+        $isPendingRequest = false;
+        $isReceivedRequest = false;
+        $isCurrentUser = false;
+        
+        if (Auth::check()) {
+            $currentUser = Auth::user();
+            $isCurrentUser = $currentUser->id == $userId;
+            
+            // Check if they are friends
+            $isFriend = $currentUser->friends()
+                ->where('friend_id', $userId)
+                ->exists();
+            
+            // Check pending sent requests
+            $isPendingRequest = $currentUser->pendingSentFriendRequests()
+                ->where('friend_id', $userId)
+                ->exists();
+            
+            // Check pending received requests
+            $isReceivedRequest = $currentUser->pendingReceivedFriendRequests()
+                ->where('user_id', $userId)
+                ->exists();
+        }
+        
+        // Get user games
+        $userGames = $user->games()
+            ->orderBy('user_games.created_at', 'desc')
+            ->take(4)
+            ->get();
+            
+        // Get user badges 
+        $userBadges = $user->badges;
+        
+        return view('user-profile', [
+            'user' => $user,
+            'isFriend' => $isFriend,
+            'isPendingRequest' => $isPendingRequest,
+            'isReceivedRequest' => $isReceivedRequest,
+            'isCurrentUser' => $isCurrentUser,
+            'userGames' => $userGames,
+            'userBadges' => $userBadges,
+        ]);
+    }
+    
     public function update(Request $request)
     {
         $user = Auth::user();
